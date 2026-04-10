@@ -199,7 +199,7 @@ public class HomeController : Controller
             return RedirectToAction(nameof(Vocabulary));
         }
 
-        return View("Dashboard/Vocab_detail", new DeckDetailPageViewModel
+        return View("Vocab_detail", new DeckDetailPageViewModel
         {
             User = user,
             Deck = deck,
@@ -219,7 +219,7 @@ public class HomeController : Controller
         }
 
         var session = await _learningService.GetLearningSessionAsync(user.Id, deckId, cancellationToken);
-        return View("Dashboard/Learning", new LearningPageViewModel
+        return View("Learning", new LearningPageViewModel
         {
             User = user,
             Session = session

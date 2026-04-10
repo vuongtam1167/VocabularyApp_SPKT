@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Vocab_LearningApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b5b1235c117890f8990bb01d8463995bbb29445")]
 [assembly: System.Reflection.AssemblyProductAttribute("Vocab_LearningApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Vocab_LearningApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

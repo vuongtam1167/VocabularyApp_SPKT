@@ -3,9 +3,10 @@
 @model Vocab_LearningApp.Models.ViewModels.DashboardPageViewModel
 @{
     Layout = null;
-    ViewData["Title"] = "Dashboard Page";
-    var featuredDeck = Model.Dashboard?.RecentDecks?.FirstOrDefault();
-    var reminder = Model.Dashboard?.Notifications?.FirstOrDefault();
+    ViewData["Title"] = "Dashboard";
+    var unreadNotifications = Model.Dashboard.Notifications.Count(x => !x.IsRead);
+    var featuredDeck = Model.Dashboard.RecentDecks.FirstOrDefault();
+    var dailyPlan = Model.Dashboard.DailyPlan;
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -14,218 +15,241 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - VocabMaster</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-    </style>
 </head>
-<body class="bg-gray-50">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">📚</span>
-                    <span class="text-xl font-bold text-gray-900">VocabMaster</span>
+<body class="bg-slate-50 text-slate-900">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <a asp-controller="Home" asp-action="Dashboard" class="flex items-center gap-3">
+                <span class="text-2xl">📚</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wide text-indigo-600">VocabMaster</p>
+                    <p class="text-xs text-slate-500">Dashboard</p>
                 </div>
-
-                <nav class="hidden md:flex items-center gap-6">
-                    <a class="text-indigo-600 font-semibold" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
-                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Vocabulary">Bộ từ vựng</a>
-                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Progress">Tiến độ</a>
-                </nav>
-
-                <div class="flex items-center gap-4">
-                    <form asp-action="Logout" method="post" class="hidden md:block">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="text-sm text-gray-500 hover:text-gray-800">Đăng xuất</button>
-                    </form>
-                    <div class="flex items-center gap-3">
-                        <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="w-10 h-10 rounded-full">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-gray-900">@Model.User.FullName</p>
-                            <p class="text-xs text-gray-500">@Model.User.Email</p>
-                        </div>
-                    </div>
+            </a>
+            <nav class="hidden items-center gap-6 md:flex">
+                <a asp-controller="Home" asp-action="Dashboard" class="font-semibold text-indigo-600">Dashboard</a>
+                <a asp-controller="Home" asp-action="Vocabulary" class="text-slate-600 hover:text-slate-900">Bộ từ vựng</a>
+                <a asp-controller="Home" asp-action="Progress" class="text-slate-600 hover:text-slate-900">Tiến độ</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <div class="hidden text-right sm:block">
+                    <p class="text-sm font-semibold">@Model.User.FullName</p>
+                    <p class="text-xs text-slate-500">@Model.User.Email</p>
                 </div>
+                <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
+                <form asp-action="Logout" method="post" class="hidden md:block">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Đăng xuất</button>
+                </form>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Xin chào, @Model.User.FullName! 👋</h1>
-            <p class="text-gray-600 mt-2">Mục tiêu hiện tại: @(Model.User.LearningGoal ?? "General English") • Level @(Model.User.CurrentLevel ?? "A1")</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Từ đã học</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.LearnedVocabularyCount</p>
-                        <p class="text-sm text-green-600 mt-2">@Model.Dashboard.Stats.StudiedTodayCount từ hôm nay</p>
-                    </div>
-                    <div class="bg-blue-100 p-4 rounded-lg">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Từ cần ôn</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.DueReviewCount</p>
-                        <p class="text-sm text-orange-600 mt-2">SRS đến hạn</p>
-                    </div>
-                    <div class="bg-orange-100 p-4 rounded-lg">
-                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Chuỗi ngày học</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.CurrentStreak 🔥</p>
-                        <p class="text-sm text-gray-500 mt-2">Dài nhất: @Model.Dashboard.Stats.LongestStreak ngày</p>
-                    </div>
-                    <div class="bg-red-100 p-4 rounded-lg">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Từ thành thạo</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.MasteredVocabularyCount</p>
-                        <p class="text-sm text-green-600 mt-2">Độ chính xác @Model.Dashboard.Stats.AccuracyPercentage%</p>
-                    </div>
-                    <div class="bg-green-100 p-4 rounded-lg">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-8 text-white">
-            <div class="flex items-center justify-between gap-6">
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <section class="mb-8 rounded-[2rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 text-white shadow-xl">
+            <div class="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:items-center">
                 <div>
-                    <h2 class="text-2xl font-bold mb-2">Bạn có @Model.Dashboard.DailyPlan.DueReviewWords từ cần ôn tập hôm nay!</h2>
-                    <p class="text-white/80 mb-4">Mục tiêu mới còn lại: @Model.Dashboard.DailyPlan.RemainingNewWords / @Model.Dashboard.DailyPlan.NewWordsTarget từ</p>
-                    @if (featuredDeck != null)
-                    {
-                        <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@featuredDeck.Id">
-                            Học ngay →
-                        </a>
-                    }
+                    <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm backdrop-blur">
+                        <span>🎯</span>
+                        <span>Mục tiêu: @(Model.User.LearningGoal ?? "General English") • Level @(Model.User.CurrentLevel ?? "A1")</span>
+                    </div>
+                    <h1 class="mt-4 text-3xl font-black sm:text-4xl">Xin chào, @Model.User.FullName 👋</h1>
+                    <p class="mt-3 max-w-2xl text-white/85">Hôm nay bạn có thể học mới, ôn lại từ đến hạn và xem ngay tiến độ học tập ở một màn hình duy nhất.</p>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <a asp-controller="Home" asp-action="Vocabulary" class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50">Xem bộ từ</a>
+                        <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@(featuredDeck?.Id)" class="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">Bắt đầu học</a>
+                    </div>
                 </div>
-                <div class="hidden lg:block text-8xl">📖</div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Từ cần ôn hôm nay</p>
+                        <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.DueReviewCount</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Số từ đã học</p>
+                        <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.LearnedVocabularyCount</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Streak hiện tại</p>
+                        <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.CurrentStreak ngày</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Độ chính xác</p>
+                        <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.AccuracyPercentage%</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Bộ từ vựng gần đây</h2>
-                <a asp-controller="Home" asp-action="Vocabulary" class="text-indigo-600 hover:text-indigo-700 font-medium">Xem tất cả →</a>
+        <section class="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm text-slate-500">Bộ từ</p>
+                <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.DeckCount</p>
+                <p class="mt-2 text-sm text-slate-500">Bộ đang sở hữu</p>
+            </article>
+            <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm text-slate-500">Tổng từ</p>
+                <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.TotalVocabularyCount</p>
+                <p class="mt-2 text-sm text-slate-500">Toàn bộ vocab</p>
+            </article>
+            <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm text-slate-500">Từ đã học</p>
+                <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.LearnedVocabularyCount</p>
+                <p class="mt-2 text-sm text-emerald-600">Đã ghi nhận tiến độ</p>
+            </article>
+            <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm text-slate-500">Từ thành thạo</p>
+                <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.MasteredVocabularyCount</p>
+                <p class="mt-2 text-sm text-slate-500">Đã thuộc lâu dài</p>
+            </article>
+            <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:col-span-2 xl:col-span-1">
+                <p class="text-sm text-slate-500">Tỷ lệ đúng</p>
+                <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.AccuracyPercentage%</p>
+                <p class="mt-2 text-sm text-slate-500">Accuracy trung bình</p>
+            </article>
+        </section>
+
+        <section class="mb-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Daily learning plan</p>
+                        <h2 class="mt-1 text-2xl font-bold">Kế hoạch học hôm nay</h2>
+                    </div>
+                    <span class="rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">Mục tiêu @Model.Dashboard.Stats.DailyTarget từ/ngày</span>
+                </div>
+                <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="text-sm text-slate-500">Từ mới</p>
+                        <p class="mt-2 text-3xl font-black">@dailyPlan.NewWordsTarget</p>
+                        <p class="mt-1 text-sm text-slate-500">Còn lại: @dailyPlan.RemainingNewWords</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="text-sm text-slate-500">Từ cần ôn</p>
+                        <p class="mt-2 text-3xl font-black">@dailyPlan.DueReviewWords</p>
+                        <p class="mt-1 text-sm text-slate-500">Đến hạn học</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="text-sm text-slate-500">Streak</p>
+                        <p class="mt-2 text-3xl font-black">@Model.Dashboard.Stats.CurrentStreak</p>
+                        <p class="mt-1 text-sm text-slate-500">Chuỗi ngày liên tục</p>
+                    </div>
+                </div>
+                <div class="mt-6 rounded-2xl bg-indigo-50 p-4 text-sm text-indigo-700">
+                    Mẹo: học các từ đến hạn trước, sau đó thêm từ mới để giữ tốc độ lặp ngắt quãng ổn định.
+                </div>
             </div>
 
-            @if (Model.Dashboard.RecentDecks.Any())
-            {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach (var deck in Model.Dashboard.RecentDecks.Take(3))
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wide text-fuchsia-600">Notifications</p>
+                        <h2 class="mt-1 text-2xl font-bold">Nhắc học thông minh</h2>
+                    </div>
+                    <span class="rounded-full bg-fuchsia-50 px-4 py-2 text-sm font-semibold text-fuchsia-700">@unreadNotifications chưa đọc</span>
+                </div>
+                <div class="mt-6 space-y-3">
+                    @if (Model.Dashboard.Notifications.Any())
                     {
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
-                            <div class="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900">@deck.Title</h3>
-                                    <p class="text-sm text-gray-500 mt-1">@deck.TotalWords từ vựng</p>
-                                </div>
-                                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                                    @deck.PrimaryTag
-                                </span>
-                            </div>
-                            <p class="text-gray-600 text-sm mb-4">@(deck.Description ?? "Bộ từ chưa có mô tả.")</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-full bg-gray-200 rounded-full h-2" style="width: 120px;">
-                                        <div class="bg-green-500 h-2 rounded-full" style="width: @deck.ProgressPercentage%;"></div>
+                        foreach (var notification in Model.Dashboard.Notifications)
+                        {
+                            <div class="rounded-2xl border border-slate-200 p-4 @(notification.IsRead ? "bg-slate-50" : "bg-white")">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-sm font-semibold @(notification.IsRead ? "text-slate-500" : "text-slate-900")">@notification.Content</p>
+                                        <p class="mt-1 text-xs text-slate-500">@notification.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
                                     </div>
-                                    <span class="text-sm text-gray-600">@deck.ProgressPercentage%</span>
+                                    @if (!notification.IsRead)
+                                    {
+                                        <button type="button" class="rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700" onclick="markAsRead(@notification.Id)">Đã đọc</button>
+                                    }
                                 </div>
-                                <span class="text-xs text-orange-600">@deck.DueWords cần ôn</span>
                             </div>
-                            <div class="flex gap-2">
-                                <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@deck.Id" class="flex-1 bg-indigo-600 text-white text-center py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-                                    Xem chi tiết
-                                </a>
-                                <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@deck.Id" class="flex-1 bg-gray-100 text-gray-900 text-center py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
-                                    Học ngay
-                                </a>
-                            </div>
-                        </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-500">Chưa có thông báo mới.</div>
                     }
                 </div>
-            }
-            else
-            {
-                <div class="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-500">
-                    Bạn chưa có bộ từ nào. Hãy dùng API <code>/api/decks</code> hoặc trang quản lý để tạo bộ từ đầu tiên.
-                </div>
-            }
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center gap-4">
-                <div class="bg-yellow-100 p-4 rounded-lg">
-                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-gray-900">Nhắc nhở học tập</h3>
-                    <p class="text-gray-600 mt-1">@(reminder?.Content ?? "Chưa có thông báo mới. Hệ thống sẽ tạo nhắc nhở dựa trên lịch ôn SRS của bạn.")</p>
-                </div>
-                <span class="text-sm text-gray-400">@(reminder?.ScheduledAt?.ToString("HH:mm dd/MM") ?? "Sẵn sàng")</span>
             </div>
-        </div>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Recent decks</p>
+                        <h2 class="mt-1 text-2xl font-bold">Bộ từ gần đây</h2>
+                    </div>
+                    <a asp-controller="Home" asp-action="Vocabulary" class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Xem tất cả</a>
+                </div>
+                <div class="mt-6 grid gap-4 md:grid-cols-2">
+                    @if (Model.Dashboard.RecentDecks.Any())
+                    {
+                        foreach (var deck in Model.Dashboard.RecentDecks)
+                        {
+                            <article class="rounded-2xl border border-slate-200 p-5">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">@deck.PrimaryTag</span>
+                                        <h3 class="mt-3 text-lg font-bold">@deck.Title</h3>
+                                        <p class="mt-1 text-sm text-slate-500">@(deck.Description ?? "Chưa có mô tả")</p>
+                                    </div>
+                                    <span class="rounded-full @(deck.IsPublic ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600") px-3 py-1 text-xs font-semibold">@(deck.IsPublic ? "Public" : "Private")</span>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600">
+                                    <div class="rounded-xl bg-slate-50 p-3"><span class="block text-xs text-slate-400">Tổng từ</span><strong>@deck.TotalWords</strong></div>
+                                    <div class="rounded-xl bg-slate-50 p-3"><span class="block text-xs text-slate-400">Đang học</span><strong>@deck.LearnedWords</strong></div>
+                                    <div class="rounded-xl bg-slate-50 p-3"><span class="block text-xs text-slate-400">Cần ôn</span><strong>@deck.DueWords</strong></div>
+                                    <div class="rounded-xl bg-slate-50 p-3"><span class="block text-xs text-slate-400">Tiến độ</span><strong>@deck.ProgressPercentage%</strong></div>
+                                </div>
+                                <div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+                                    <div class="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500" style="width: @deck.ProgressPercentage%;"></div>
+                                </div>
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@deck.Id" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Xem chi tiết</a>
+                                    <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@deck.Id" class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200">Học ngay</a>
+                                </div>
+                            </article>
+                        }
+                    }
+                    else
+                    {
+                        <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500 md:col-span-2">Chưa có bộ từ nào. Tạo bộ mới ở tab Bộ từ vựng.</div>
+                    }
+                </div>
+            </div>
+
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-semibold uppercase tracking-wide text-emerald-600">Lộ trình học</p>
+                <h2 class="mt-1 text-2xl font-bold">Việc nên làm tiếp theo</h2>
+                <div class="mt-6 space-y-3 text-sm text-slate-600">
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Học các từ đang đến hạn trước để không bị dồn bài.</div>
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Mở bộ từ vựng để thêm từ mới hoặc chỉnh sửa nội dung.</div>
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Xem lại thông báo để không bỏ lỡ lịch học hôm nay.</div>
+                </div>
+                <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+                    Nhắc học và tiến độ đã được gom về một màn hình để bạn thao tác nhanh hơn.
+                </div>
+            </div>
+        </section>
     </main>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
-        <div class="flex items-center justify-around">
-            <a asp-controller="Home" asp-action="Dashboard" class="flex flex-col items-center gap-1 text-indigo-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span class="text-xs font-semibold">Dashboard</span>
-            </a>
-            <a asp-controller="Home" asp-action="Vocabulary" class="flex flex-col items-center gap-1 text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <span class="text-xs">Bộ từ</span>
-            </a>
-            <a asp-controller="Home" asp-action="Progress" class="flex flex-col items-center gap-1 text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <span class="text-xs">Tiến độ</span>
-            </a>
-        </div>
-    </nav>
+    <script>
+        async function markAsRead(notificationId) {
+        const { response, payload } = await window.vocabApp.requestJson(`/api/notifications/${notificationId}/read`, {
+        method: 'POST'
+        });
 
-    <div class="md:hidden h-20"></div>
+        if (!response.ok) {
+        window.vocabApp.toast(payload?.message || 'Không thể cập nhật thông báo.', 'error');
+        return;
+        }
+
+        window.vocabApp.toast('Đã đánh dấu đã đọc.', 'success');
+        window.vocabApp.safeReload();
+        }
+    </script>
 </body>
 </html>

@@ -1,10 +1,9 @@
 ﻿@model Vocab_LearningApp.Models.ViewModels.LoginPageViewModel
 
 @{
-    ViewData["Title"] = "Login Page";
+    ViewData["Title"] = "Đăng nhập";
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -12,300 +11,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - VocabMaster</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-
-        .tab-button.active {
-        background: white;
-        color: #4f46e5;
-        font-weight: 600;
-        }
-    </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-5xl font-bold text-white mb-2">📚 VocabMaster</h1>
-            <p class="text-white/80">Nâng cao vốn từ vựng tiếng Anh của bạn</p>
-        </div>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-fuchsia-950 px-4 py-8">
+    <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col items-center justify-center gap-8 lg:flex-row">
+        <section class="max-w-xl text-center text-white lg:text-left">
+            <div class="mb-6 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur">
+                <span>📚</span>
+                <span>Flashcard • Context learning • Theo dõi tiến độ</span>
+            </div>
+            <h1 class="text-4xl font-black leading-tight sm:text-5xl">VocabMaster</h1>
+            <p class="mt-4 text-base text-white/85 sm:text-lg">
+                Học từ vựng theo bộ, thêm từ nhanh, ôn tập gọn và theo dõi tiến độ ngay trong một giao diện sạch, dễ dùng.
+            </p>
 
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div class="flex bg-gray-100 p-1">
-                <button type="button"
-                        class="tab-button flex-1 py-3 rounded-lg transition-all @(Model.ActiveTab == "login" ? "active" : "text-gray-600")"
-                        onclick="showTab('login')">
-                    Đăng nhập
-                </button>
-                <button type="button"
-                        class="tab-button flex-1 py-3 rounded-lg transition-all @(Model.ActiveTab == "register" ? "active" : "text-gray-600")"
-                        onclick="showTab('register')">
-                    Đăng ký
-                </button>
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                <div class="rounded-3xl bg-white/10 p-5 text-left backdrop-blur">
+                    <p class="text-sm font-semibold text-white/70">Đăng nhập an toàn</p>
+                    <p class="mt-2 text-lg font-bold">Cookie HttpOnly</p>
+                    <p class="mt-2 text-sm text-white/75">Giữ phiên đăng nhập ổn định và gọn hơn cho MVC.</p>
+                </div>
+                <div class="rounded-3xl bg-white/10 p-5 text-left backdrop-blur">
+                    <p class="text-sm font-semibold text-white/70">Học tập thông minh</p>
+                    <p class="mt-2 text-lg font-bold">Bộ từ + tiến độ</p>
+                    <p class="mt-2 text-sm text-white/75">Tạo bộ riêng, thêm vocab và theo dõi kết quả học mỗi ngày.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="w-full max-w-xl rounded-[2rem] bg-white shadow-2xl ring-1 ring-black/5">
+            <div class="border-b border-gray-100 p-2">
+                <div class="flex rounded-2xl bg-gray-100 p-1">
+                    <button type="button" class="tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition @(Model.ActiveTab == "login" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-600")" onclick="showTab('login')">Đăng nhập</button>
+                    <button type="button" class="tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition @(Model.ActiveTab == "register" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-600")" onclick="showTab('register')">Đăng ký</button>
+                </div>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
             {
-                <div class="mx-6 mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-                    @Model.ErrorMessage
-                </div>
+                <div class="mx-6 mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">@Model.ErrorMessage</div>
             }
 
             @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
             {
-                <div class="mx-6 mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-                    @Model.SuccessMessage
-                </div>
+                <div class="mx-6 mt-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@Model.SuccessMessage</div>
             }
 
-            <div id="login-tab" class="p-8 @(Model.ActiveTab == "register" ? "hidden" : string.Empty)">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Chào mừng trở lại!</h2>
+            <div id="login-tab" class="p-6 @(Model.ActiveTab == "register" ? "hidden" : string.Empty)">
+                <h2 class="text-2xl font-bold text-gray-900">Chào mừng trở lại</h2>
+                <p class="mt-1 text-sm text-gray-500">Đăng nhập bằng email và mật khẩu của bạn.</p>
 
-                <form asp-action="Login" method="post" class="space-y-4">
+                <form asp-action="Login" method="post" class="mt-6 space-y-4">
                     @Html.AntiForgeryToken()
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        <input type="email"
-                               name="Email"
-                               value="@Model.Login.Email"
-                               placeholder="your@email.com"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" name="Email" value="@Model.Login.Email" placeholder="your@email.com" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none ring-0 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
-                        <input type="password"
-                               name="Password"
-                               placeholder="••••••••"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Mật khẩu</label>
+                        <input type="password" name="Password" placeholder="••••••••" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center">
-                            <input type="checkbox"
-                                   name="RememberMe"
-                                   value="true"
-                            @(Model.Login.RememberMe ? "checked" : null)
-                                   class="rounded text-indigo-600 focus:ring-indigo-500">
-                            <span class="ml-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
+                    <div class="flex items-center justify-between gap-3">
+                        <label class="flex items-center gap-2 text-sm text-gray-600">
+                            <input type="checkbox" name="RememberMe" value="true" @(Model.Login.RememberMe ? "checked" : null) class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"> Ghi nhớ đăng nhập
                         </label>
-                        <span class="text-sm text-gray-400">JWT + cookie an toàn</span>
+                        <span class="text-xs text-gray-400">Phiên làm việc qua cookie bảo mật</span>
                     </div>
-
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-                        Đăng nhập
-                    </button>
+                    <button type="submit" class="w-full rounded-2xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700">Đăng nhập</button>
                 </form>
 
-                <div class="mt-4 rounded-lg bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
-                    Google login đã có API tại <code>/api/auth/google</code>. Chỉ cần nối thêm Google OAuth credentials là dùng được ngay.
+                <div class="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
+                    Mẹo: dùng cùng một tài khoản để giữ bộ từ, lịch ôn và tiến độ học đồng bộ trên thiết bị.
                 </div>
             </div>
 
-            <div id="register-tab" class="p-8 @(Model.ActiveTab == "register" ? string.Empty : "hidden")">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Tạo tài khoản mới</h2>
+            <div id="register-tab" class="p-6 @(Model.ActiveTab == "register" ? string.Empty : "hidden")">
+                <h2 class="text-2xl font-bold text-gray-900">Tạo tài khoản mới</h2>
+                <p class="mt-1 text-sm text-gray-500">Thiết lập mục tiêu học và level ngay từ đầu.</p>
 
-                <form asp-action="Register" method="post" class="space-y-4">
+                <form asp-action="Register" method="post" class="mt-6 space-y-4">
                     @Html.AntiForgeryToken()
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Họ và tên</label>
-                        <input type="text"
-                               name="FullName"
-                               value="@Model.Register.FullName"
-                               placeholder="Nguyễn Văn A"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Họ và tên</label>
+                        <input type="text" name="FullName" value="@Model.Register.FullName" placeholder="Nguyễn Văn A" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        <input type="email"
-                               name="Email"
-                               value="@Model.Register.Email"
-                               placeholder="your@email.com"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" name="Email" value="@Model.Register.Email" placeholder="your@email.com" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
-                        <input type="password"
-                               name="Password"
-                               placeholder="••••••••"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Mật khẩu</label>
+                        <input type="password" name="Password" placeholder="••••••••" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu học (Tùy chọn)</label>
-                        <select name="LearningGoal"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
-                            @if (string.IsNullOrWhiteSpace(Model.Register.LearningGoal))
-                            {
-                                <option value="" selected>Chọn mục tiêu</option>
-                            }
-                            else
-                            {
-                                <option value="">Chọn mục tiêu</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "IELTS")
-                            {
-                                <option value="IELTS" selected>IELTS</option>
-                            }
-                            else
-                            {
-                                <option value="IELTS">IELTS</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "TOEIC")
-                            {
-                                <option value="TOEIC" selected>TOEIC</option>
-                            }
-                            else
-                            {
-                                <option value="TOEIC">TOEIC</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "TOEFL")
-                            {
-                                <option value="TOEFL" selected>TOEFL</option>
-                            }
-                            else
-                            {
-                                <option value="TOEFL">TOEFL</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "Business")
-                            {
-                                <option value="Business" selected>Business English</option>
-                            }
-                            else
-                            {
-                                <option value="Business">Business English</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "Travel")
-                            {
-                                <option value="Travel" selected>Travel English</option>
-                            }
-                            else
-                            {
-                                <option value="Travel">Travel English</option>
-                            }
-
-                            @if (Model.Register.LearningGoal == "General")
-                            {
-                                <option value="General" selected>General English</option>
-                            }
-                            else
-                            {
-                                <option value="General">General English</option>
-                            }
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Mục tiêu học</label>
+                        <select name="LearningGoal" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                            <option value="">Chọn mục tiêu</option>
+                            <option value="IELTS" selected="@(Model.Register.LearningGoal == "IELTS" ? "selected" : null)">IELTS</option>
+                            <option value="TOEIC" selected="@(Model.Register.LearningGoal == "TOEIC" ? "selected" : null)">TOEIC</option>
+                            <option value="TOEFL" selected="@(Model.Register.LearningGoal == "TOEFL" ? "selected" : null)">TOEFL</option>
+                            <option value="Business" selected="@(Model.Register.LearningGoal == "Business" ? "selected" : null)">Business English</option>
+                            <option value="Travel" selected="@(Model.Register.LearningGoal == "Travel" ? "selected" : null)">Travel English</option>
+                            <option value="General" selected="@(Model.Register.LearningGoal == "General" ? "selected" : null)">General English</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Trình độ hiện tại (Tùy chọn)</label>
-                        <select name="CurrentLevel"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
-                            @if (string.IsNullOrWhiteSpace(Model.Register.CurrentLevel))
-                            {
-                                <option value="" selected>Chọn trình độ</option>
-                            }
-                            else
-                            {
-                                <option value="">Chọn trình độ</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "A1")
-                            {
-                                <option value="A1" selected>A1 - Beginner</option>
-                            }
-                            else
-                            {
-                                <option value="A1">A1 - Beginner</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "A2")
-                            {
-                                <option value="A2" selected>A2 - Elementary</option>
-                            }
-                            else
-                            {
-                                <option value="A2">A2 - Elementary</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "B1")
-                            {
-                                <option value="B1" selected>B1 - Intermediate</option>
-                            }
-                            else
-                            {
-                                <option value="B1">B1 - Intermediate</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "B2")
-                            {
-                                <option value="B2" selected>B2 - Upper Intermediate</option>
-                            }
-                            else
-                            {
-                                <option value="B2">B2 - Upper Intermediate</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "C1")
-                            {
-                                <option value="C1" selected>C1 - Advanced</option>
-                            }
-                            else
-                            {
-                                <option value="C1">C1 - Advanced</option>
-                            }
-
-                            @if (Model.Register.CurrentLevel == "C2")
-                            {
-                                <option value="C2" selected>C2 - Proficiency</option>
-                            }
-                            else
-                            {
-                                <option value="C2">C2 - Proficiency</option>
-                            }
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Level (A1–C2)</label>
+                        <select name="CurrentLevel" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                            <option value="">Chọn level</option>
+                            <option value="A1" selected="@(Model.Register.CurrentLevel == "A1" ? "selected" : null)">A1 - Beginner</option>
+                            <option value="A2" selected="@(Model.Register.CurrentLevel == "A2" ? "selected" : null)">A2 - Elementary</option>
+                            <option value="B1" selected="@(Model.Register.CurrentLevel == "B1" ? "selected" : null)">B1 - Intermediate</option>
+                            <option value="B2" selected="@(Model.Register.CurrentLevel == "B2" ? "selected" : null)">B2 - Upper Intermediate</option>
+                            <option value="C1" selected="@(Model.Register.CurrentLevel == "C1" ? "selected" : null)">C1 - Advanced</option>
+                            <option value="C2" selected="@(Model.Register.CurrentLevel == "C2" ? "selected" : null)">C2 - Proficiency</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu từ mới mỗi ngày</label>
-                        <input type="number"
-                               name="DailyTarget"
-                               min="1"
-                               max="200"
-                               value="@(Model.Register.DailyTarget ?? 10)"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                        <label class="mb-2 block text-sm font-medium text-gray-700">Mục tiêu từ mới mỗi ngày</label>
+                        <input type="number" name="DailyTarget" min="1" max="200" value="@(Model.Register.DailyTarget ?? 10)" class="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-
-                    <div class="flex items-start">
-                        <input type="checkbox"
-                               name="AcceptTerms"
-                               value="true"
-                        @(Model.Register.AcceptTerms ? "checked" : null)
-                               class="mt-1 rounded text-indigo-600 focus:ring-indigo-500">
+                    <div class="flex items-start gap-2">
+                        <input type="checkbox" name="AcceptTerms" value="true" @(Model.Register.AcceptTerms ? "checked" : null) class="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         <input type="hidden" name="AcceptTerms" value="false" />
-                        <label class="ml-2 text-sm text-gray-600">
-                            Tôi đồng ý với <span class="text-indigo-600">Điều khoản dịch vụ</span> và <span class="text-indigo-600">Chính sách bảo mật</span>
-                        </label>
+                        <label class="text-sm text-gray-600">Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật.</label>
                     </div>
-
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-                        Đăng ký
-                    </button>
+                    <button type="submit" class="w-full rounded-2xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700">Đăng ký</button>
                 </form>
             </div>
-        </div>
+        </section>
+    </div>
 
-        <div class="text-center mt-6 text-white/80 text-sm">
-            Server mặc định: <code class="text-white">.\\SQLEXPRESS</code> | User: <code class="text-white">sa</code>
-        </div>
+    <div class="mx-auto mt-6 max-w-6xl text-center text-xs text-white/75">
+        Ứng dụng lưu phiên đăng nhập bằng cookie thay vì hiển thị các tuỳ chọn thừa.
     </div>
 
     <script>
@@ -317,15 +154,18 @@
         if (tabName === 'login') {
         loginTab.classList.remove('hidden');
         registerTab.classList.add('hidden');
-        buttons[0].classList.add('active');
-        buttons[1].classList.remove('active');
+        buttons[0].className = 'tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition bg-white text-indigo-600 shadow-sm';
+        buttons[1].className = 'tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition text-gray-600';
         } else {
         loginTab.classList.add('hidden');
         registerTab.classList.remove('hidden');
-        buttons[0].classList.remove('active');
-        buttons[1].classList.add('active');
+        buttons[0].className = 'tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition text-gray-600';
+        buttons[1].className = 'tab-button flex-1 rounded-xl py-3 text-sm font-semibold transition bg-white text-indigo-600 shadow-sm';
         }
         }
+
+        const initialTab = '@Model.ActiveTab';
+        showTab(initialTab === 'register' ? 'register' : 'login');
     </script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp\\Vocab_LearningApp.csproj": {}
+    "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp_Beta\\Vocab_LearningApp.csproj": {}
   },
   "projects": {
-    "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp\\Vocab_LearningApp.csproj": {
+    "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp_Beta\\Vocab_LearningApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp\\Vocab_LearningApp.csproj",
+        "projectUniqueName": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp_Beta\\Vocab_LearningApp.csproj",
         "projectName": "Vocab_LearningApp",
-        "projectPath": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp\\Vocab_LearningApp.csproj",
+        "projectPath": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp_Beta\\Vocab_LearningApp.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp\\obj\\",
+        "outputPath": "D:\\Code BT SPKT\\C++\\Đồ án\\Vocab_LearningApp_Beta\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\software\\Microsoft Visual Studio\\Shared\\NuGetPackages"
