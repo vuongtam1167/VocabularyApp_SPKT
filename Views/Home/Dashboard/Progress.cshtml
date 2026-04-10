@@ -1,0 +1,298 @@
+﻿@using System
+@using System.Linq
+@using System.Text.Json
+@model Vocab_LearningApp.Models.ViewModels.ProgressPageViewModel
+@{
+    ViewData["Title"] = "Progress Page";
+    Layout = null;
+    var activityLabels = Model.Progress.DailyActivity?.Select(x => x.Label).ToArray() ?? Array.Empty<string>();
+    var activityValues = Model.Progress.DailyActivity?.Select(x => x.Value).ToArray() ?? Array.Empty<int>();
+    var accuracyLabels = Model.Progress.AccuracyTrend.Select(point => point.Label).ToArray();
+    var accuracyValues = Model.Progress.AccuracyTrend.Select(point => point.Value).ToArray();
+    var masteryPercentage = Model.Progress.TotalVocabularyCount == 0 ? 0 : (int)Math.Round((double)Model.Progress.MasteredWordsCount / Model.Progress.TotalVocabularyCount * 100, MidpointRounding.AwayFromZero);
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiến độ - VocabMaster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📚</span>
+                    <span class="text-xl font-bold text-gray-900">VocabMaster</span>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Vocabulary">Bộ từ vựng</a>
+                    <a class="text-indigo-600 font-semibold" asp-controller="Home" asp-action="Progress">Tiến độ</a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="w-10 h-10 rounded-full">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Tiến độ học tập</h1>
+            <p class="text-gray-600 mt-2">Theo dõi quá trình học tập và thành tích của bạn • Level ước lượng: <span class="font-semibold">@Model.Progress.LevelEstimation</span></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Chuỗi ngày hiện tại</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Progress.CurrentStreak ngày</p>
+                    </div>
+                    <div class="bg-orange-100 p-4 rounded-lg">
+                        <span class="text-4xl">🔥</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Chuỗi dài nhất</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Progress.LongestStreak ngày</p>
+                    </div>
+                    <div class="bg-yellow-100 p-4 rounded-lg">
+                        <span class="text-4xl">🏆</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Tổng buổi học</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Progress.TotalStudySessions</p>
+                    </div>
+                    <div class="bg-blue-100 p-4 rounded-lg">
+                        <span class="text-4xl">📅</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Thời gian học</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Progress.TotalDurationMinutes phút</p>
+                    </div>
+                    <div class="bg-purple-100 p-4 rounded-lg">
+                        <span class="text-4xl">⏱️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="text-2xl">🏅</span>
+                    <h2 class="text-xl font-bold text-gray-900">Tổng quan từ vựng</h2>
+                </div>
+                <p class="text-gray-600 mb-6">Tổng cộng @Model.Progress.TotalVocabularyCount từ vựng</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Từ mới</span>
+                            <span class="font-semibold">@Model.Progress.NewWordsCount từ</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: @(Model.Progress.TotalVocabularyCount == 0 ? 0 : (double)Model.Progress.NewWordsCount / Model.Progress.TotalVocabularyCount * 100)%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Đang học</span>
+                            <span class="font-semibold">@Model.Progress.LearningWordsCount từ</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: @(Model.Progress.TotalVocabularyCount == 0 ? 0 : (double)Model.Progress.LearningWordsCount / Model.Progress.TotalVocabularyCount * 100)%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Thành thạo</span>
+                            <span class="font-semibold">@Model.Progress.MasteredWordsCount từ</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: @(Model.Progress.TotalVocabularyCount == 0 ? 0 : (double)Model.Progress.MasteredWordsCount / Model.Progress.TotalVocabularyCount * 100)%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">Tỷ lệ thành thạo</p>
+                        <p class="text-4xl font-bold text-green-600">@masteryPercentage%</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">Retention rate</p>
+                        <p class="text-4xl font-bold text-indigo-600">@Model.Progress.RetentionRate%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="text-2xl">📈</span>
+                    <h2 class="text-xl font-bold text-gray-900">Độ chính xác</h2>
+                </div>
+                <p class="text-gray-600 mb-6">Hiệu suất học tập của bạn</p>
+
+                <div class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-green-100 to-green-200 mb-4">
+                        <span class="text-5xl font-bold text-green-700">@Model.Progress.AccuracyPercentage%</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Độ chính xác trung bình</p>
+                </div>
+
+                <div class="space-y-3 pt-4 border-t border-gray-200">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Tổng số từ đã theo dõi:</span>
+                        <span class="font-semibold">@Model.Progress.TotalVocabularyCount</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Tổng số từ đúng:</span>
+                        <span class="font-semibold text-green-600">@Model.Progress.CorrectWords</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Tổng số từ sai:</span>
+                        <span class="font-semibold text-red-600">@Model.Progress.IncorrectWords</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Hoạt động 14 ngày gần đây</h2>
+            <p class="text-gray-600 mb-6">Số đơn vị học tập mỗi ngày</p>
+            <div class="h-80">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Xu hướng độ chính xác</h2>
+            <p class="text-gray-600 mb-6">Theo dõi sự tiến bộ của bạn</p>
+            <div class="h-80">
+                <canvas id="accuracyChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div class="flex items-center justify-around">
+            <a asp-controller="Home" asp-action="Dashboard" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs">Dashboard</span>
+            </a>
+            <a asp-controller="Home" asp-action="Vocabulary" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span class="text-xs">Bộ từ</span>
+            </a>
+            <a asp-controller="Home" asp-action="Progress" class="flex flex-col items-center gap-1 text-indigo-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-xs font-semibold">Tiến độ</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="md:hidden h-20"></div>
+
+    <script>
+        const activityLabels = @Html.Raw(JsonSerializer.Serialize(activityLabels));
+        const activityValues = @Html.Raw(JsonSerializer.Serialize(activityValues));
+        const accuracyLabels = @Html.Raw(JsonSerializer.Serialize(accuracyLabels));
+        const accuracyValues = @Html.Raw(JsonSerializer.Serialize(accuracyValues));
+
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        new Chart(activityCtx, {
+        type: 'bar',
+        data: {
+        labels: activityLabels,
+        datasets: [{
+        label: 'Đơn vị học tập',
+        data: activityValues,
+        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+        borderRadius: 6
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: {
+        display: true,
+        position: 'bottom'
+        }
+        },
+        scales: {
+        y: {
+        beginAtZero: true
+        }
+        }
+        }
+        });
+
+        const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+        new Chart(accuracyCtx, {
+        type: 'line',
+        data: {
+        labels: accuracyLabels,
+        datasets: [{
+        label: 'Độ chính xác (%)',
+        data: accuracyValues,
+        borderColor: 'rgba(16, 185, 129, 1)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
+        fill: true,
+        borderWidth: 3
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: {
+        display: true,
+        position: 'bottom'
+        }
+        },
+        scales: {
+        y: {
+        beginAtZero: true,
+        max: 100
+        }
+        }
+        }
+        });
+    </script>
+</body>
+</html>

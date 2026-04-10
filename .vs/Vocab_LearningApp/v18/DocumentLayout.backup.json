@@ -1,0 +1,347 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\learning.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\learning.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\progressapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\progressapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\learningapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\learningapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\decksapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\decksapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\dashboardapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\dashboardapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\vocab_detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\vocab_detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\dashboard\\vocabulary.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\dashboard\\vocabulary.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\dashboard\\progress.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\dashboard\\progress.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\dashboard\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\dashboard\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\notificationsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\notificationsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\models\\requests\\apprequests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:models\\requests\\apprequests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\authapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\authapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\models\\viewmodels\\pageviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:models\\viewmodels\\pageviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\models\\domain\\appentities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:models\\domain\\appentities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\controllers\\api\\apicontrollerbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:controllers\\api\\apicontrollerbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DashboardApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\DashboardApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\DashboardApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\DashboardApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\DashboardApiController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwA8AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:26:21.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DecksApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\DecksApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\DecksApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\DecksApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\DecksApiController.cs",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAzwGMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T13:10:48.72Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LearningApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\LearningApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\LearningApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\LearningApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\LearningApiController.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAuwBcAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:26:37.977Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ProgressApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\ProgressApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\ProgressApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\ProgressApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\ProgressApiController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwBAAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:26:56.272Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Learning.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Learning.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Learning.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Learning.cshtml",
+              "RelativeToolTip": "Views\\Home\\Learning.cshtml",
+              "ViewState": "AgIAABQBAAAAAAAAAAAkwCQBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T13:04:20.54Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Vocab_detail.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Vocab_detail.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Vocab_detail.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Vocab_detail.cshtml",
+              "RelativeToolTip": "Views\\Home\\Vocab_detail.cshtml",
+              "ViewState": "AgIAAMAAAAAAAAAAAAAkwNMAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T13:04:23.657Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Privacy.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Privacy.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Privacy.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Privacy.cshtml",
+              "RelativeToolTip": "Views\\Home\\Privacy.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T13:23:29.193Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Vocabulary.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "RelativeToolTip": "Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "ViewState": "AgIAAL8AAAAAAAAAAAAkwM4AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T11:19:39.032Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Progress.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Progress.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Dashboard\\Progress.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Progress.cshtml",
+              "RelativeToolTip": "Views\\Home\\Dashboard\\Progress.cshtml",
+              "ViewState": "AgIAANsAAAAAAAAAAAAkwOMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T11:29:48.694Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Dashboard\\Dashboard.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Dashboard\\Dashboard.cshtml",
+              "RelativeToolTip": "Views\\Home\\Dashboard\\Dashboard.cshtml",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAAEAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T11:19:13.837Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAABIBAAAAAAAAAAA7wB8BAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T13:01:22.749Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "NotificationsApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\NotificationsApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\NotificationsApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\NotificationsApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\NotificationsApiController.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAuwBYAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:26:47.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AuthApiController.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\AuthApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\AuthApiController.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\AuthApiController.cs",
+              "RelativeToolTip": "Controllers\\Api\\AuthApiController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:26:06.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Login.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Login.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Views\\Home\\Login.cshtml",
+              "RelativeToolTip": "Views\\Home\\Login.cshtml",
+              "ViewState": "AgIAADUBAAAAAAAAAAAkwEoBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-10T11:42:09.137Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AppRequests.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\Requests\\AppRequests.cs",
+              "RelativeDocumentMoniker": "Models\\Requests\\AppRequests.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\Requests\\AppRequests.cs",
+              "RelativeToolTip": "Models\\Requests\\AppRequests.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAwwBUAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:25:08.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PageViewModels.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\ViewModels\\PageViewModels.cs",
+              "RelativeDocumentMoniker": "Models\\ViewModels\\PageViewModels.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\ViewModels\\PageViewModels.cs",
+              "RelativeToolTip": "Models\\ViewModels\\PageViewModels.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAowC8AAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T12:38:31.725Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "AppEntities.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\Domain\\AppEntities.cs",
+              "RelativeDocumentMoniker": "Models\\Domain\\AppEntities.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\Domain\\AppEntities.cs",
+              "RelativeToolTip": "Models\\Domain\\AppEntities.cs",
+              "ViewState": "AgIAAL8AAAAAAAAAAAAmwMwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:50:07.007Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ApiControllerBase.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\ApiControllerBase.cs",
+              "RelativeDocumentMoniker": "Controllers\\Api\\ApiControllerBase.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Controllers\\Api\\ApiControllerBase.cs",
+              "RelativeToolTip": "Controllers\\Api\\ApiControllerBase.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAzwBkAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:43:00.914Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ErrorViewModel.cs",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\ErrorViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp\\Models\\ErrorViewModel.cs",
+              "RelativeToolTip": "Models\\ErrorViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-10T11:25:21.815Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

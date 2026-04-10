@@ -1,0 +1,231 @@
+﻿@using System
+@using System.Linq
+@model Vocab_LearningApp.Models.ViewModels.DashboardPageViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Dashboard Page";
+    var featuredDeck = Model.Dashboard?.RecentDecks?.FirstOrDefault();
+    var reminder = Model.Dashboard?.Notifications?.FirstOrDefault();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VocabMaster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📚</span>
+                    <span class="text-xl font-bold text-gray-900">VocabMaster</span>
+                </div>
+
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-indigo-600 font-semibold" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Vocabulary">Bộ từ vựng</a>
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Progress">Tiến độ</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <form asp-action="Logout" method="post" class="hidden md:block">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="text-sm text-gray-500 hover:text-gray-800">Đăng xuất</button>
+                    </form>
+                    <div class="flex items-center gap-3">
+                        <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="w-10 h-10 rounded-full">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-semibold text-gray-900">@Model.User.FullName</p>
+                            <p class="text-xs text-gray-500">@Model.User.Email</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Xin chào, @Model.User.FullName! 👋</h1>
+            <p class="text-gray-600 mt-2">Mục tiêu hiện tại: @(Model.User.LearningGoal ?? "General English") • Level @(Model.User.CurrentLevel ?? "A1")</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Từ đã học</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.LearnedVocabularyCount</p>
+                        <p class="text-sm text-green-600 mt-2">@Model.Dashboard.Stats.StudiedTodayCount từ hôm nay</p>
+                    </div>
+                    <div class="bg-blue-100 p-4 rounded-lg">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Từ cần ôn</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.DueReviewCount</p>
+                        <p class="text-sm text-orange-600 mt-2">SRS đến hạn</p>
+                    </div>
+                    <div class="bg-orange-100 p-4 rounded-lg">
+                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Chuỗi ngày học</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.CurrentStreak 🔥</p>
+                        <p class="text-sm text-gray-500 mt-2">Dài nhất: @Model.Dashboard.Stats.LongestStreak ngày</p>
+                    </div>
+                    <div class="bg-red-100 p-4 rounded-lg">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Từ thành thạo</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.Dashboard.Stats.MasteredVocabularyCount</p>
+                        <p class="text-sm text-green-600 mt-2">Độ chính xác @Model.Dashboard.Stats.AccuracyPercentage%</p>
+                    </div>
+                    <div class="bg-green-100 p-4 rounded-lg">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-8 text-white">
+            <div class="flex items-center justify-between gap-6">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Bạn có @Model.Dashboard.DailyPlan.DueReviewWords từ cần ôn tập hôm nay!</h2>
+                    <p class="text-white/80 mb-4">Mục tiêu mới còn lại: @Model.Dashboard.DailyPlan.RemainingNewWords / @Model.Dashboard.DailyPlan.NewWordsTarget từ</p>
+                    @if (featuredDeck != null)
+                    {
+                        <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@featuredDeck.Id">
+                            Học ngay →
+                        </a>
+                    }
+                </div>
+                <div class="hidden lg:block text-8xl">📖</div>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Bộ từ vựng gần đây</h2>
+                <a asp-controller="Home" asp-action="Vocabulary" class="text-indigo-600 hover:text-indigo-700 font-medium">Xem tất cả →</a>
+            </div>
+
+            @if (Model.Dashboard.RecentDecks.Any())
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var deck in Model.Dashboard.RecentDecks.Take(3))
+                    {
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900">@deck.Title</h3>
+                                    <p class="text-sm text-gray-500 mt-1">@deck.TotalWords từ vựng</p>
+                                </div>
+                                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+                                    @deck.PrimaryTag
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">@(deck.Description ?? "Bộ từ chưa có mô tả.")</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-2" style="width: 120px;">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: @deck.ProgressPercentage%;"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-600">@deck.ProgressPercentage%</span>
+                                </div>
+                                <span class="text-xs text-orange-600">@deck.DueWords cần ôn</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@deck.Id" class="flex-1 bg-indigo-600 text-white text-center py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                                    Xem chi tiết
+                                </a>
+                                <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@deck.Id" class="flex-1 bg-gray-100 text-gray-900 text-center py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                                    Học ngay
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-500">
+                    Bạn chưa có bộ từ nào. Hãy dùng API <code>/api/decks</code> hoặc trang quản lý để tạo bộ từ đầu tiên.
+                </div>
+            }
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="bg-yellow-100 p-4 rounded-lg">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-900">Nhắc nhở học tập</h3>
+                    <p class="text-gray-600 mt-1">@(reminder?.Content ?? "Chưa có thông báo mới. Hệ thống sẽ tạo nhắc nhở dựa trên lịch ôn SRS của bạn.")</p>
+                </div>
+                <span class="text-sm text-gray-400">@(reminder?.ScheduledAt?.ToString("HH:mm dd/MM") ?? "Sẵn sàng")</span>
+            </div>
+        </div>
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div class="flex items-center justify-around">
+            <a asp-controller="Home" asp-action="Dashboard" class="flex flex-col items-center gap-1 text-indigo-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs font-semibold">Dashboard</span>
+            </a>
+            <a asp-controller="Home" asp-action="Vocabulary" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span class="text-xs">Bộ từ</span>
+            </a>
+            <a asp-controller="Home" asp-action="Progress" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-xs">Tiến độ</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="md:hidden h-20"></div>
+</body>
+</html>

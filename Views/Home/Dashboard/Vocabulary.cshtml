@@ -1,0 +1,213 @@
+﻿@using System
+@using System.Linq
+@model Vocab_LearningApp.Models.ViewModels.VocabularyPageViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Vocabulary Page";
+    var tags = Model.Decks
+        .SelectMany(deck => (deck.Tags ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(tag => tag)
+        .ToList();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bộ từ vựng - VocabMaster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📚</span>
+                    <span class="text-xl font-bold text-gray-900">VocabMaster</span>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+                    <a class="text-indigo-600 font-semibold" asp-controller="Home" asp-action="Vocabulary">Bộ từ vựng</a>
+                    <a class="text-gray-600 hover:text-gray-900" asp-controller="Home" asp-action="Progress">Tiến độ</a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="w-10 h-10 rounded-full">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Bộ từ vựng của bạn</h1>
+                <p class="text-gray-600 mt-2">Quản lý và tổ chức các bộ từ vựng theo đúng schema Decks/Vocabularies</p>
+            </div>
+            <button type="button" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tạo bộ từ mới qua API
+            </button>
+        </div>
+
+        <form method="get" asp-action="Vocabulary" class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text"
+                           name="search"
+                           value="@Model.Search"
+                           placeholder="Tìm kiếm bộ từ..."
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                </div>
+                <select name="tag" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                    @if (string.IsNullOrWhiteSpace(Model.Tag))
+                    {
+                        <option value="" selected>Tất cả danh mục</option>
+                    }
+                    else
+                    {
+                        <option value="">Tất cả danh mục</option>
+                    }
+                    @foreach (var tag in tags)
+                    {
+                        if (string.Equals(Model.Tag, tag, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@tag" selected>@tag</option>
+                        }
+                        else
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    }
+                </select>
+                <select name="sort" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                    @if (string.IsNullOrWhiteSpace(Model.Sort) || string.Equals(Model.Sort, "newest", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="newest" selected>Sắp xếp: Mới nhất</option>
+                    }
+                    else
+                    {
+                        <option value="newest">Sắp xếp: Mới nhất</option>
+                    }
+                    @if (string.Equals(Model.Sort, "oldest", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="oldest" selected>Cũ nhất</option>
+                    }
+                    else
+                    {
+                        <option value="oldest">Cũ nhất</option>
+                    }
+                    @if (string.Equals(Model.Sort, "az", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="az" selected>A-Z</option>
+                    }
+                    else
+                    {
+                        <option value="az">A-Z</option>
+                    }
+                    @if (string.Equals(Model.Sort, "za", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="za" selected>Z-A</option>
+                    }
+                    else
+                    {
+                        <option value="za">Z-A</option>
+                    }
+                    @if (string.Equals(Model.Sort, "progress", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="progress" selected>Tiến độ cao nhất</option>
+                    }
+                    else
+                    {
+                        <option value="progress">Tiến độ cao nhất</option>
+                    }
+                </select>
+                <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">Lọc</button>
+            </div>
+        </form>
+
+        @if (Model.Decks.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var deck in Model.Decks)
+                {
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all overflow-hidden group">
+                        <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 text-white">
+                            <div class="flex items-start justify-between mb-4">
+                                <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                    @deck.PrimaryTag
+                                </span>
+                                <span class="text-xs text-white/80">@(deck.IsPublic ? "Public" : "Private")</span>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">@deck.Title</h3>
+                            <p class="text-indigo-100 text-sm">@deck.TotalWords từ vựng</p>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 text-sm mb-4">@(deck.Description ?? "Bộ từ chưa có mô tả.")</p>
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">Tiến độ học</span>
+                                    <span class="font-semibold text-gray-900">@deck.ProgressPercentage%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: @deck.ProgressPercentage%;"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                                <span>@deck.LearnedWords đã học • @deck.NewWords chưa học</span>
+                                <span>@deck.DueWords cần ôn</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@deck.Id" class="flex-1 bg-indigo-600 text-white text-center py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                                    Xem chi tiết
+                                </a>
+                                <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@deck.Id" class="flex-1 bg-gray-100 text-gray-900 text-center py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                                    Học ngay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bg-white rounded-xl shadow-sm border border-dashed border-gray-300 p-10 text-center text-gray-500">
+                Không tìm thấy bộ từ phù hợp. Bạn có thể tạo qua API <code>POST /api/decks</code> hoặc import bằng <code>POST /api/decks/import</code>.
+            </div>
+        }
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div class="flex items-center justify-around">
+            <a asp-controller="Home" asp-action="Dashboard" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs">Dashboard</span>
+            </a>
+            <a asp-controller="Home" asp-action="Vocabulary" class="flex flex-col items-center gap-1 text-indigo-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span class="text-xs font-semibold">Bộ từ</span>
+            </a>
+            <a asp-controller="Home" asp-action="Progress" class="flex flex-col items-center gap-1 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-xs">Tiến độ</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="md:hidden h-20"></div>
+</body>
+</html>

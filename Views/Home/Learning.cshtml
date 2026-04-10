@@ -1,0 +1,294 @@
+﻿@using System.Text.Json
+@model Vocab_LearningApp.Models.ViewModels.LearningPageViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Learning Page";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học tập - VocabMaster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .flashcard {
+            perspective: 1000px;
+            min-height: 400px;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
+    <header class="bg-white/10 backdrop-blur-sm border-b border-white/20">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@Model.Session.DeckId" class="text-white hover:text-white/80">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                    <div class="text-white">
+                        <p class="font-semibold" id="deck-title">@Model.Session.DeckTitle</p>
+                        <p class="text-xs text-white/70" id="session-subtitle">Đang học: @(Model.Session.CurrentCard is null ? 0 : 1)/@Model.Session.TotalCards từ</p>
+                    </div>
+                </div>
+                <span class="text-white text-sm hidden md:block">@Model.User.FullName</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <div class="w-full bg-white/20 rounded-full h-2">
+                <div id="progress-bar" class="bg-white h-2 rounded-full transition-all" style="width: @(Model.Session.TotalCards == 0 ? 0 : 100 / Math.Max(Model.Session.TotalCards, 1))%;"></div>
+            </div>
+            <p id="progress-text" class="text-white text-sm mt-2 text-center">@(Model.Session.CurrentCard is null ? 0 : 1) / @Model.Session.TotalCards từ</p>
+        </div>
+
+        <div class="max-w-2xl mx-auto mb-8">
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front bg-white p-12 shadow-2xl">
+                        <div class="flex flex-col items-center justify-center h-full min-h-[400px]" id="flashcard-front"></div>
+                    </div>
+                    <div class="flashcard-back bg-gradient-to-br from-indigo-600 to-purple-600 p-12 shadow-2xl text-white">
+                        <div class="flex flex-col h-full min-h-[400px]" id="flashcard-back"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rating-buttons" class="max-w-2xl mx-auto"></div>
+
+        <div class="max-w-2xl mx-auto mt-12 bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+            <h3 class="text-white font-semibold mb-4 text-center">Thống kê buổi học</h3>
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <p id="studied-count" class="text-3xl font-bold text-white">@Model.Session.CompletedCards</p>
+                    <p class="text-white/70 text-sm">Đã học</p>
+                </div>
+                <div>
+                    <p id="correct-count" class="text-3xl font-bold text-white">@Model.Session.CorrectAnswers</p>
+                    <p class="text-white/70 text-sm">Đúng</p>
+                </div>
+                <div>
+                    <p id="accuracy-count" class="text-3xl font-bold text-white">@Model.Session.AccuracyPercentage%</p>
+                    <p class="text-white/70 text-sm">Độ chính xác</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let isFlipped = false;
+        let session = null;
+
+        function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.innerText = text ?? '';
+        return div.innerHTML;
+        }
+
+        function flipCard() {
+        if (!getCurrentCard()) return;
+
+        const flashcard = document.getElementById('flashcard');
+        isFlipped = !isFlipped;
+        flashcard.classList.toggle('flipped', isFlipped);
+        }
+
+        function getCurrentCard() {
+        return session?.CurrentCard || session?.currentCard || null;
+        }
+
+        function getQueue() {
+        return session?.Queue || session?.queue || [];
+        }
+
+        function getReviewPreviews() {
+        return session?.ReviewPreviews || session?.reviewPreviews || [];
+        }
+
+        async function loadSession() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const deckId = urlParams.get('deckId');
+
+        const response = await fetch(`/api/learning/session?deckId=${deckId ?? ''}`);
+
+        if (!response.ok) {
+        alert('Không thể tải phiên học.');
+        return;
+        }
+
+        session = await response.json();
+        renderSession();
+        }
+
+        function renderSession() {
+        if (!session) return;
+
+        const currentCard = getCurrentCard();
+        const queue = getQueue();
+
+        const front = document.getElementById('flashcard-front');
+        const back = document.getElementById('flashcard-back');
+        const ratingButtons = document.getElementById('rating-buttons');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const sessionSubtitle = document.getElementById('session-subtitle');
+        const deckTitle = document.getElementById('deck-title');
+        const studiedCount = document.getElementById('studied-count');
+        const correctCount = document.getElementById('correct-count');
+        const accuracyCount = document.getElementById('accuracy-count');
+
+        const totalCards = session.TotalCards ?? session.totalCards ?? queue.length;
+        const completedCards = session.CompletedCards ?? session.completedCards ?? 0;
+        const correctAnswers = session.CorrectAnswers ?? session.correctAnswers ?? 0;
+        const accuracy = session.AccuracyPercentage ?? session.accuracyPercentage ?? 0;
+
+        const progressCurrent = currentCard ? Math.max(1, totalCards - queue.length + 1) : totalCards;
+        const progressPercent = totalCards === 0 ? 0 : Math.min(100, Math.round(progressCurrent / totalCards * 100));
+
+        deckTitle.textContent = session.DeckTitle || session.deckTitle || 'Buổi học';
+        sessionSubtitle.textContent = `Đang học: ${currentCard ? progressCurrent : totalCards}/${totalCards} từ`;
+        progressText.textContent = `${currentCard ? progressCurrent : totalCards} / ${totalCards} từ`;
+        progressBar.style.width = `${progressPercent}%`;
+        studiedCount.textContent = completedCards;
+        correctCount.textContent = correctAnswers;
+        accuracyCount.textContent = `${accuracy}%`;
+
+        if (!currentCard) {
+        front.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full min-h-[400px]">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Hoàn thành phiên học</h2>
+        <p class="text-gray-500 mb-8">Không còn từ nào trong hàng đợi hiện tại.</p>
+        <a href="/Home/Vocabulary" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700">Quay lại bộ từ</a>
+        </div>`;
+        back.innerHTML = front.innerHTML;
+        ratingButtons.innerHTML = '';
+        return;
+        }
+
+        front.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full min-h-[400px]">
+        <h2 class="text-5xl font-bold text-gray-900 mb-4">${escapeHtml(currentCard.Word || currentCard.word)}</h2>
+        <p class="text-xl text-gray-500">${escapeHtml(currentCard.Pronunciation || currentCard.pronunciation || '')}</p>
+        <p class="text-gray-400 mt-8 text-sm">Nhấn vào thẻ để xem nghĩa</p>
+        </div>`;
+
+        back.innerHTML = `
+        <div class="flex flex-col h-full min-h-[400px]">
+        <div class="flex-1">
+        <h3 class="text-3xl font-bold mb-6">${escapeHtml(currentCard.Word || currentCard.word)}</h3>
+        <div class="space-y-4 text-left">
+        <div>
+        <p class="text-white/70 text-sm mb-1">Nghĩa:</p>
+        <p class="text-lg">${escapeHtml(currentCard.MeaningVi || currentCard.meaningVi || 'Chưa cập nhật')}</p>
+        </div>
+        <div>
+        <p class="text-white/70 text-sm mb-1">Ví dụ:</p>
+        <p class="italic">${escapeHtml(currentCard.ExampleSentence || currentCard.exampleSentence || 'Chưa có ví dụ')}</p>
+        </div>
+        <div>
+        <p class="text-white/70 text-sm mb-1">Collocation:</p>
+        <p>${escapeHtml(currentCard.Collocations || currentCard.collocations || 'Chưa cập nhật')}</p>
+        </div>
+        <div>
+        <p class="text-white/70 text-sm mb-1">Từ liên quan:</p>
+        <p>${escapeHtml(currentCard.RelatedWords || currentCard.relatedWords || 'Chưa cập nhật')}</p>
+        </div>
+        </div>
+        </div>
+        <p class="text-white/60 text-sm mt-4 text-center">Nhấn vào thẻ để quay lại</p>
+        </div>`;
+
+        ratingButtons.innerHTML = `
+        <p class="text-white text-center mb-4">Bạn nhớ từ này thế nào?</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        ${getReviewPreviews().map(preview => `
+        <button type="button" onclick="submitReview(${preview.Rating ?? preview.rating})" class="${buttonClass(preview.Label || preview.label)} text-white px-6 py-4 rounded-xl font-semibold">
+        <div class="text-2xl mb-1">${escapeHtml(preview.Emoji || preview.emoji)}</div>
+        <div class="text-sm">${escapeHtml(preview.Label || preview.label)}</div>
+        <div class="text-xs opacity-75">${escapeHtml(preview.ScheduleText || preview.scheduleText)}</div>
+        </button>`).join('')}
+        </div>`;
+        }
+
+        function buttonClass(label) {
+        switch ((label || '').toLowerCase()) {
+        case 'quên': return 'bg-red-500 hover:bg-red-600';
+        case 'khó': return 'bg-orange-500 hover:bg-orange-600';
+        case 'dễ': return 'bg-green-500 hover:bg-green-600';
+        default: return 'bg-blue-500 hover:bg-blue-600';
+        }
+        }
+
+        async function submitReview(rating) {
+        const currentCard = getCurrentCard();
+        if (!currentCard) return;
+
+        const response = await fetch('/api/learning/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        vocabularyId: currentCard.VocabularyId || currentCard.vocabularyId,
+        rating,
+        deckId: session.DeckId || session.deckId
+        })
+        });
+
+        if (!response.ok) {
+        alert('Không thể ghi nhận kết quả học.');
+        return;
+        }
+
+        const result = await response.json();
+        session = result.Session || result.session;
+
+        isFlipped = false;
+        document.getElementById('flashcard').classList.remove('flipped');
+
+        renderSession();
+        }
+
+        document.addEventListener('keydown', function (event) {
+        if (event.code === 'Space') {
+        event.preventDefault();
+        flipCard();
+        }
+        });
+
+        loadSession();
+    </script>
+</body>
+</html>
