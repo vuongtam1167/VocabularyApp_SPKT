@@ -2,7 +2,7 @@
 @model Vocab_LearningApp.Models.ViewModels.LearningPageViewModel
 @{
     Layout = null;
-    ViewData["Title"] = "Học tập";
+    ViewData["Title"] = "Learning Page";
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -12,234 +12,410 @@
     <title>Học tập - VocabMaster</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-        .flashcard { perspective: 1000px; min-height: 420px; }
-        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform .6s; transform-style: preserve-3d; }
-        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1.5rem; }
-        .flashcard-back { transform: rotateY(180deg); }
+        body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .flashcard-wrapper {
+        perspective: 1200px;
+        }
+
+        .flashcard {
+        position: relative;
+        width: 100%;
+        height: 420px;
+        cursor: pointer;
+        transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped {
+        transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        }
+
+        .flashcard-back {
+        transform: rotateY(180deg);
+        }
+
+        .flashcard-wrapper:hover .flashcard:not(.flipped) {
+        transform: rotateY(4deg) translateY(-4px);
+        }
+        .flashcard-wrapper:hover .flashcard.flipped {
+        transform: rotateY(176deg) translateY(-4px);
+        }
+
+        .rating-btn {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .rating-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .rating-btn:active {
+        transform: translateY(0);
+        }
+
+        @@keyframes shimmer {
+        0%   { background-position: -400px 0; }
+        100% { background-position: 400px 0; }
+        }
+        .shimmer {
+        background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.1) 75%);
+        background-size: 400px 100%;
+        animation: shimmer 1.4s infinite;
+        }
+
+        @@keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+        50%       { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
+        }
+        .pulse-glow { animation: pulse-glow 2s infinite; }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white">
-    <header class="border-b border-white/15 bg-white/10 backdrop-blur">
-        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@Model.Session.DeckId" class="flex items-center gap-3 text-white hover:text-white/80">
-                <span class="text-2xl">←</span>
-                <div>
-                    <p class="font-semibold" id="deck-title">@Model.Session.DeckTitle</p>
-                    <p class="text-xs text-white/70" id="session-subtitle">@(Model.Session.CurrentCard is null ? "Không còn từ nào" : $"Đang học: 1/{Model.Session.TotalCards}")</p>
+<body class="min-h-screen" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #7c3aed 100%);">
+
+    <!-- Header -->
+    <header class="border-b border-white/10" style="background: rgba(255,255,255,0.07); backdrop-filter: blur(12px);">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@Model.Session.DeckId"
+                           class="flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                    <div>
+                        <p class="font-bold text-white text-sm leading-tight" id="deck-title">@Model.Session.DeckTitle</p>
+                        <p class="text-xs text-white/60 mt-0.5" id="session-subtitle">
+                            Đang tải...
+                        </p>
+                    </div>
                 </div>
-            </a>
-            <div class="text-right text-sm text-white/80">
-                <p>@Model.User.FullName</p>
-                <p>@Model.User.LearningGoal • @Model.User.CurrentLevel</p>
+                <div class="flex items-center gap-3">
+                    <div class="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                        <span class="text-white text-xs font-medium">@Model.User.FullName</span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mb-6 grid gap-4 md:grid-cols-4">
-            <div class="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                <p class="text-sm text-white/70">Tổng thẻ</p>
-                <p id="total-cards" class="mt-2 text-3xl font-black">@Model.Session.TotalCards</p>
+    <main class="container mx-auto px-4 py-6 max-w-2xl">
+
+        <!-- Progress Bar -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+                <span id="progress-text" class="text-white/70 text-sm font-medium">0 / @Model.Session.TotalCards từ</span>
+                <span id="progress-pct" class="text-white text-sm font-bold">0%</span>
             </div>
-            <div class="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                <p class="text-sm text-white/70">Đến hạn ôn</p>
-                <p id="due-cards" class="mt-2 text-3xl font-black">@Model.Session.DueCards</p>
-            </div>
-            <div class="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                <p class="text-sm text-white/70">Từ mới</p>
-                <p id="new-cards" class="mt-2 text-3xl font-black">@Model.Session.NewCards</p>
-            </div>
-            <div class="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                <p class="text-sm text-white/70">Accuracy</p>
-                <p id="accuracy-count" class="mt-2 text-3xl font-black">@Model.Session.AccuracyPercentage%</p>
+            <div class="w-full rounded-full h-2.5" style="background: rgba(255,255,255,0.15);">
+                <div id="progress-bar"
+                     class="h-2.5 rounded-full transition-all duration-500"
+                     style="width: 0%; background: linear-gradient(90deg, #a78bfa, #818cf8);"></div>
             </div>
         </div>
 
-        <div class="mb-8">
-            <div class="h-2 w-full overflow-hidden rounded-full bg-white/20">
-                <div id="progress-bar" class="h-2 rounded-full bg-white transition-all" style="width:@(Model.Session.TotalCards == 0 ? 0 : 100 / Math.Max(Model.Session.TotalCards, 1))%"></div>
-            </div>
-            <p id="progress-text" class="mt-2 text-center text-sm text-white/80">@(Model.Session.CurrentCard is null ? 0 : 1) / @Model.Session.TotalCards từ</p>
-        </div>
-
-        <div class="mx-auto mb-8 max-w-2xl">
+        <!-- Flashcard -->
+        <div class="flashcard-wrapper mb-6" id="flashcard-wrapper">
             <div class="flashcard" id="flashcard" onclick="flipCard()">
-                <div class="flashcard-inner">
-                    <div class="flashcard-front bg-white p-8 text-slate-900 shadow-2xl">
-                        <div class="flex h-full min-h-[420px] flex-col items-center justify-center" id="flashcard-front"></div>
+
+                <!-- Mặt trước -->
+                <div class="flashcard-face flashcard-front" style="background: #ffffff;">
+                    <div class="flex flex-col items-center justify-center h-full px-10 py-8 text-center" id="flashcard-front">
+                        <!-- nội dung được render bằng JS -->
+                        <div class="shimmer w-48 h-12 rounded-xl mb-4"></div>
+                        <div class="shimmer w-32 h-5 rounded-lg mb-2"></div>
+                        <div class="shimmer w-24 h-4 rounded-lg mt-6"></div>
                     </div>
-                    <div class="flashcard-back bg-gradient-to-br from-indigo-700 to-fuchsia-700 p-8 shadow-2xl" id="flashcard-back-container">
-                        <div class="flex h-full min-h-[420px] flex-col text-white" id="flashcard-back"></div>
+                </div>
+
+                <!-- Mặt sau -->
+                <div class="flashcard-face flashcard-back"
+                     style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                    <div class="flex flex-col h-full px-8 py-6 text-white overflow-y-auto" id="flashcard-back">
+                        <!-- nội dung được render bằng JS -->
                     </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Hint text (ẩn sau khi flip) -->
+        <p id="hint-text" class="text-center text-white/50 text-sm mb-5 transition-opacity duration-300">
+            💡 Nhấn thẻ hoặc nhấn <kbd class="bg-white/20 px-1.5 py-0.5 rounded text-xs">Space</kbd> để lật
+        </p>
+
+        <!-- Rating Buttons -->
+        <div id="rating-buttons" class="mb-8"></div>
+
+        <!-- Thống kê buổi học -->
+        <div class="rounded-2xl p-5 border border-white/10" style="background: rgba(255,255,255,0.07); backdrop-filter: blur(8px);">
+            <h3 class="text-white font-semibold mb-4 text-center text-sm tracking-wide uppercase opacity-80">
+                📊 Thống kê buổi học
+            </h3>
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="rounded-xl p-3" style="background: rgba(255,255,255,0.1);">
+                    <p id="studied-count" class="text-3xl font-extrabold text-white">@Model.Session.CompletedCards</p>
+                    <p class="text-white/60 text-xs mt-1">Đã học</p>
+                </div>
+                <div class="rounded-xl p-3" style="background: rgba(255,255,255,0.1);">
+                    <p id="correct-count" class="text-3xl font-extrabold text-emerald-400">@Model.Session.CorrectAnswers</p>
+                    <p class="text-white/60 text-xs mt-1">Đúng</p>
+                </div>
+                <div class="rounded-xl p-3" style="background: rgba(255,255,255,0.1);">
+                    <p id="accuracy-count" class="text-3xl font-extrabold text-violet-300">@Model.Session.AccuracyPercentage%</p>
+                    <p class="text-white/60 text-xs mt-1">Chính xác</p>
                 </div>
             </div>
         </div>
 
-        <div class="mx-auto max-w-2xl" id="rating-buttons"></div>
-
-        <div class="mx-auto mt-10 max-w-4xl rounded-[2rem] bg-white/10 p-6 backdrop-blur">
-            <h3 class="text-center text-lg font-bold">Cách đánh giá SRS</h3>
-            <div class="mt-4 grid gap-3 md:grid-cols-4">
-                <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-2xl">Again</p><p class="text-sm text-white/75">Ôn sớm hơn</p></div>
-                <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-2xl">Hard</p><p class="text-sm text-white/75">Giữ nhịp ngắn</p></div>
-                <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-2xl">Good</p><p class="text-sm text-white/75">Theo lịch chuẩn</p></div>
-                <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-2xl">Easy</p><p class="text-sm text-white/75">Giãn lịch mạnh</p></div>
-            </div>
-        </div>
     </main>
 
     <script>
         let isFlipped = false;
         let session = null;
+        let sessionEnded = false;
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.innerText = text ?? '';
-            return div.innerHTML;
+        /* ── helpers ─────────────────────────────────── */
+        function esc(text) {
+        const d = document.createElement('div');
+        d.innerText = text ?? '';
+        return d.innerHTML;
         }
 
         function getCurrentCard() {
-            return session?.CurrentCard || session?.currentCard || null;
-        }
-
-        function getQueue() {
-            return session?.Queue || session?.queue || [];
+        return session?.CurrentCard ?? session?.currentCard ?? null;
         }
 
         function getReviewPreviews() {
-            return session?.ReviewPreviews || session?.reviewPreviews || [];
+        return session?.ReviewPreviews ?? session?.reviewPreviews ?? [];
         }
 
+        function get(obj, ...keys) {
+        for (const k of keys) {
+        if (obj?.[k] !== undefined) return obj[k];
+        }
+        return null;
+        }
+
+        /* ── flip ─────────────────────────────────────── */
         function flipCard() {
-            if (!getCurrentCard()) return;
-            isFlipped = !isFlipped;
-            document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+        if (!getCurrentCard()) return;
+        isFlipped = !isFlipped;
+        document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+        document.getElementById('hint-text').style.opacity = isFlipped ? '0' : '1';
         }
 
-        function buttonClass(label) {
-            switch ((label || '').toLowerCase()) {
-                case 'quên': return 'bg-red-500 hover:bg-red-600';
-                case 'khó': return 'bg-orange-500 hover:bg-orange-600';
-                case 'dễ': return 'bg-emerald-500 hover:bg-emerald-600';
-                default: return 'bg-indigo-500 hover:bg-indigo-600';
-            }
-        }
-
-        async function loadSession() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const deckId = urlParams.get('deckId');
-            const response = await fetch(`/api/learning/session?deckId=${deckId ?? ''}`, { credentials: 'same-origin' });
-            if (!response.ok) {
-                alert('Không thể tải phiên học.');
-                return;
-            }
-            session = await response.json();
-            renderSession();
-        }
-
+        /* ── render ───────────────────────────────────── */
         function renderSession() {
-            if (!session) return;
+        if (!session) return;
 
-            const currentCard = getCurrentCard();
-            const queue = getQueue();
-            const totalCards = session.TotalCards ?? session.totalCards ?? queue.length;
-            const completedCards = session.CompletedCards ?? session.completedCards ?? 0;
-            const correctAnswers = session.CorrectAnswers ?? session.correctAnswers ?? 0;
-            const accuracy = session.AccuracyPercentage ?? session.accuracyPercentage ?? 0;
-            const front = document.getElementById('flashcard-front');
-            const back = document.getElementById('flashcard-back');
-            const ratingButtons = document.getElementById('rating-buttons');
+        const card         = getCurrentCard();
+        const queue        = session?.Queue ?? session?.queue ?? [];
+        const totalCards   = get(session, 'TotalCards', 'totalCards') ?? queue.length;
+        const completed    = get(session, 'CompletedCards', 'completedCards') ?? 0;
+        const correct      = get(session, 'CorrectAnswers', 'correctAnswers') ?? 0;
+        const accuracy     = get(session, 'AccuracyPercentage', 'accuracyPercentage') ?? 0;
+        const remaining    = card ? (queue.length) : 0;
+        const progressNum  = totalCards - remaining;
+        const progressPct  = totalCards === 0 ? 100 : Math.min(100, Math.round(progressNum / totalCards * 100));
 
-            document.getElementById('deck-title').textContent = session.DeckTitle || session.deckTitle || 'Buổi học';
-            document.getElementById('total-cards').textContent = totalCards;
-            document.getElementById('due-cards').textContent = session.DueCards ?? session.dueCards ?? 0;
-            document.getElementById('new-cards').textContent = session.NewCards ?? session.newCards ?? 0;
-            document.getElementById('accuracy-count').textContent = `${accuracy}%`;
-            document.getElementById('session-subtitle').textContent = currentCard ? `Đang học: ${Math.min(completedCards + 1, totalCards)}/${totalCards}` : 'Đã hoàn thành';
-            document.getElementById('progress-text').textContent = totalCards === 0 ? '0 / 0 từ' : `${Math.min(completedCards + 1, totalCards)} / ${totalCards} từ`;
-            document.getElementById('progress-bar').style.width = `${totalCards === 0 ? 0 : Math.min(100, Math.round((Math.max(completedCards, 1) / totalCards) * 100))}%`;
+        // cập nhật header & stats
+        document.getElementById('deck-title').textContent     = get(session, 'DeckTitle', 'deckTitle') ?? 'Buổi học';
+        document.getElementById('session-subtitle').textContent = card
+        ? `Đang học: ${progressNum + 1}/${totalCards} từ`
+        : `Hoàn thành ${totalCards} từ`;
+        document.getElementById('progress-text').textContent  = `${progressNum}/${totalCards} từ`;
+        document.getElementById('progress-pct').textContent   = `${progressPct}%`;
+        document.getElementById('progress-bar').style.width   = `${progressPct}%`;
+        document.getElementById('studied-count').textContent  = completed;
+        document.getElementById('correct-count').textContent  = correct;
+        document.getElementById('accuracy-count').textContent = `${accuracy}%`;
 
-            if (!currentCard) {
-                front.innerHTML = `
-                    <div class="flex h-full min-h-[420px] flex-col items-center justify-center text-center">
-                        <h2 class="text-4xl font-black">Hoàn thành phiên học</h2>
-                        <p class="mt-3 text-slate-500">Không còn thẻ nào trong hàng đợi hiện tại.</p>
-                        <a href="/Home/Vocabulary" class="mt-6 rounded-2xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700">Quay lại bộ từ</a>
-                    </div>`;
-                back.innerHTML = front.innerHTML;
-                ratingButtons.innerHTML = '';
-                return;
-            }
+        const front        = document.getElementById('flashcard-front');
+        const back         = document.getElementById('flashcard-back');
+        const ratingBtns   = document.getElementById('rating-buttons');
+        const hintText     = document.getElementById('hint-text');
+        const wrapper      = document.getElementById('flashcard-wrapper');
 
-            front.innerHTML = `
-                <div class="flex h-full min-h-[420px] flex-col items-center justify-center text-center">
-                    <p class="mb-3 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">${escapeHtml(currentCard.DeckTitle || currentCard.deckTitle || '')}</p>
-                    <h2 class="text-5xl font-black">${escapeHtml(currentCard.Word || currentCard.word)}</h2>
-                    <p class="mt-4 text-xl text-slate-500">${escapeHtml(currentCard.Pronunciation || currentCard.pronunciation || '')}</p>
-                    <p class="mt-8 text-sm text-slate-400">Nhấn vào thẻ để xem nghĩa</p>
-                </div>`;
+        /* ── TRƯỜNG HỢP KẾT THÚC ───────────────── */
+        if (!card) {
+        sessionEnded = true;
 
-            back.innerHTML = `
-                <div class="flex h-full min-h-[420px] flex-col justify-between">
-                    <div>
-                        <h3 class="text-3xl font-black">${escapeHtml(currentCard.Word || currentCard.word)}</h3>
-                        <div class="mt-6 space-y-4 text-left text-white">
-                            <div><p class="text-white/70 text-sm mb-1">Nghĩa</p><p class="text-lg">${escapeHtml(currentCard.MeaningVi || currentCard.meaningVi || 'Chưa cập nhật')}</p></div>
-                            <div><p class="text-white/70 text-sm mb-1">Mô tả</p><p>${escapeHtml(currentCard.DescriptionEn || currentCard.descriptionEn || 'Chưa cập nhật')}</p></div>
-                            <div><p class="text-white/70 text-sm mb-1">Ví dụ</p><p class="italic">${escapeHtml(currentCard.ExampleSentence || currentCard.exampleSentence || 'Chưa có ví dụ')}</p></div>
-                            <div><p class="text-white/70 text-sm mb-1">Collocation</p><p>${escapeHtml(currentCard.Collocations || currentCard.collocations || 'Chưa cập nhật')}</p></div>
-                            <div><p class="text-white/70 text-sm mb-1">Từ liên quan</p><p>${escapeHtml(currentCard.RelatedWords || currentCard.relatedWords || 'Chưa cập nhật')}</p></div>
-                        </div>
-                    </div>
-                    <p class="mt-6 text-center text-sm text-white/70">Nhấn vào thẻ để quay lại</p>
-                </div>`;
+        // Ẩn con trỏ click trên thẻ
+        document.getElementById('flashcard').style.cursor = 'default';
+        hintText.style.display = 'none';
 
-            ratingButtons.innerHTML = `
-                <p class="mb-4 text-center text-white">Bạn nhớ từ này thế nào?</p>
-                <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    ${getReviewPreviews().map(preview => `
-                        <button type="button" onclick="submitReview(${preview.Rating ?? preview.rating})" class="${buttonClass(preview.Label || preview.label)} rounded-2xl px-4 py-4 font-semibold text-white shadow-lg transition">
-                            <div class="text-2xl mb-1">${escapeHtml(preview.Emoji || preview.emoji)}</div>
-                            <div class="text-sm">${escapeHtml(preview.Label || preview.label)}</div>
-                            <div class="text-xs opacity-80">${escapeHtml(preview.ScheduleText || preview.scheduleText || '')}</div>
-                        </button>`).join('')}
-                </div>`;
+        front.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-center gap-4 px-4">
+        <div class="text-6xl mb-2">🎉</div>
+        <h2 class="text-3xl font-extrabold text-gray-900">Hoàn thành!</h2>
+        <p class="text-gray-500 text-sm">Bạn đã học xong tất cả từ trong buổi hôm nay.</p>
+        <div class="flex gap-3 mt-4 flex-wrap justify-center">
+        <a href="/Home/Vocabulary"
+        class="pulse-glow bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors text-sm">
+        Quay về bộ từ
+        </a>
+        <a href="/Home/Dashboard"
+        class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors text-sm">
+        Dashboard
+        </a>
+        </div>
+        </div>`;
+        back.innerHTML  = front.innerHTML;
+        ratingBtns.innerHTML = '';
+        return;
         }
 
+        /* ── MẶT TRƯỚC ─────────────────────────── */
+        const word  = esc(card.Word  ?? card.word  ?? '');
+        const pron  = esc(card.Pronunciation ?? card.pronunciation ?? '');
+
+        front.innerHTML = `
+        <div class="flex flex-col items-center justify-center gap-3">
+        <div class="inline-flex items-center gap-2 mb-1">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full"
+        style="background:#ede9fe; color:#6d28d9;">
+        ${esc(card.Status ?? card.status ?? 'Chưa học')}
+        </span>
+        </div>
+        <h2 class="text-5xl font-extrabold text-gray-900 tracking-tight">${word}</h2>
+        ${pron ? `<p class="text-lg text-gray-400 font-medium">/${pron}/</p>` : ''}
+        <p class="text-gray-300 text-sm mt-6">Nhấn để xem nghĩa →</p>
+        </div>`;
+
+        /* ── MẶT SAU ────────────────────────────── */
+        const meaning  = esc(card.MeaningVi       ?? card.meaningVi       ?? 'Chưa cập nhật');
+        const example  = esc(card.ExampleSentence ?? card.exampleSentence ?? 'Chưa có ví dụ');
+        const colloc   = esc(card.Collocations     ?? card.collocations     ?? 'Chưa cập nhật');
+        const related  = esc(card.RelatedWords     ?? card.relatedWords     ?? 'Chưa cập nhật');
+
+        back.innerHTML = `
+        <div class="flex flex-col gap-3 h-full">
+        <h3 class="text-2xl font-extrabold text-white/95 border-b border-white/20 pb-3">${word}</h3>
+        <div class="flex-1 space-y-3 overflow-y-auto pr-1">
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.12)">
+        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Nghĩa</p>
+        <p class="text-white font-semibold">${meaning}</p>
+        </div>
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Ví dụ</p>
+        <p class="text-white/90 italic text-sm">${example}</p>
+        </div>
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Collocation</p>
+        <p class="text-white/90 text-sm">${colloc}</p>
+        </div>
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Từ liên quan</p>
+        <p class="text-white/90 text-sm">${related}</p>
+        </div>
+        </div>
+        <p class="text-white/30 text-xs text-center pt-1">← Nhấn để quay lại</p>
+        </div>`;
+
+        /* ── NÚT ĐÁNH GIÁ ───────────────────────── */
+        const previews = getReviewPreviews();
+        if (previews.length > 0) {
+        const btnColors = {
+        'quên': 'from-rose-500 to-red-600',
+        'khó':  'from-orange-400 to-amber-500',
+        'tốt':  'from-sky-500 to-blue-600',
+        'dễ':   'from-emerald-500 to-green-600',
+        };
+        ratingBtns.innerHTML = `
+        <p class="text-white/60 text-xs text-center uppercase tracking-widest mb-3">Bạn nhớ từ này thế nào?</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        ${previews.map(p => {
+        const label = esc(p.Label ?? p.label ?? '');
+        const emoji = esc(p.Emoji ?? p.emoji ?? '');
+        const sched = esc(p.ScheduleText ?? p.scheduleText ?? '');
+        const rating = p.Rating ?? p.rating;
+        const colorKey = label.toLowerCase();
+        const gradient = btnColors[colorKey] ?? 'from-slate-500 to-slate-600';
+        return `
+        <button type="button"
+        onclick="submitReview(${rating})"
+        class="rating-btn bg-gradient-to-br ${gradient} text-white rounded-2xl py-4 px-3 flex flex-col items-center gap-1 shadow-lg">
+        <span class="text-2xl">${emoji}</span>
+        <span class="font-bold text-sm">${label}</span>
+        <span class="text-white/70 text-xs">${sched}</span>
+        </button>`;
+        }).join('')}
+        </div>`;
+        } else {
+        ratingBtns.innerHTML = '';
+        }
+        }
+
+        /* ── load session ─────────────────────────── */
+        async function loadSession() {
+        const deckId = new URLSearchParams(window.location.search).get('deckId');
+        try {
+        const res = await fetch(`/api/learning/session?deckId=${deckId ?? ''}`);
+        if (!res.ok) throw new Error('API error');
+        session = await res.json();
+        renderSession();
+        } catch {
+        document.getElementById('flashcard-front').innerHTML =
+        `<p class="text-red-500 font-semibold">Không thể tải phiên học. Vui lòng thử lại.</p>`;
+        }
+        }
+
+        /* ── submit review ────────────────────────── */
         async function submitReview(rating) {
-            const currentCard = getCurrentCard();
-            if (!currentCard) return;
+        // ✅ FIX: Nếu phiên đã kết thúc, không làm gì thêm
+        if (sessionEnded) return;
 
-            const response = await fetch('/api/learning/review', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    vocabularyId: currentCard.VocabularyId || currentCard.vocabularyId,
-                    deckId: session.DeckId || session.deckId,
-                    rating
-                })
-            });
+        const card = getCurrentCard();
+        if (!card) return;
 
-            if (!response.ok) {
-                alert('Không thể ghi nhận kết quả học.');
-                return;
-            }
+        try {
+        const res = await fetch('/api/learning/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        vocabularyId: card.VocabularyId ?? card.vocabularyId,
+        rating,
+        deckId: session?.DeckId ?? session?.deckId
+        })
+        });
 
-            const result = await response.json();
-            session = result.Session || result.session;
-            isFlipped = false;
-            document.getElementById('flashcard').classList.remove('flipped');
-            renderSession();
+        if (!res.ok) throw new Error('Review API error');
+
+        const result = await res.json();
+        session = result.Session ?? result.session;
+
+        // Reset về mặt trước
+        isFlipped = false;
+        document.getElementById('flashcard').classList.remove('flipped');
+        document.getElementById('hint-text').style.opacity = '1';
+
+        renderSession();
+        } catch {
+        alert('Không thể ghi nhận kết quả học. Vui lòng thử lại.');
+        }
         }
 
-        document.addEventListener('keydown', function (event) {
-            if (event.code === 'Space') {
-                event.preventDefault();
-                flipCard();
-            }
+        /* ── keyboard ─────────────────────────────── */
+        document.addEventListener('keydown', function (e) {
+        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+        // Phím số 1-4 để đánh giá nhanh
+        const ratingMap = { '1': 0, '2': 1, '3': 2, '4': 3 };
+        if (isFlipped && ratingMap[e.key] !== undefined) {
+        submitReview(ratingMap[e.key]);
+        }
         });
 
         loadSession();

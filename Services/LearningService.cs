@@ -30,7 +30,9 @@ public sealed class LearningService
         }
 
         var dailyTarget = await GetDailyTargetAsync(connection, userId, cancellationToken);
-        var queue = await GetQueueAsync(connection, userId, selectedDeck.Value.Id, dailyTarget, cancellationToken);
+
+        var queue = await LoadQueueAsync(connection, userId, selectedDeck.Value.Id, Math.Max(dailyTarget + 10, 20), dueOrNewOnly: true, cancellationToken);
+
         var performance = await GetTodayPerformanceAsync(connection, userId, cancellationToken);
         var currentCard = queue.FirstOrDefault();
         var previews = currentCard is null ? Array.Empty<ReviewOptionPreview>() : BuildReviewPreviews(currentCard);
@@ -232,23 +234,6 @@ public sealed class LearningService
         command.CommandText = "SELECT ISNULL(daily_target, 10) FROM dbo.Users WHERE id = @userId;";
         command.AddParameter("@userId", userId);
         return Convert.ToInt32(await command.ExecuteScalarAsync(cancellationToken));
-    }
-
-    private static async Task<List<LearningCard>> GetQueueAsync(
-        SqlConnection connection,
-        long userId,
-        long deckId,
-        int dailyTarget,
-        CancellationToken cancellationToken)
-    {
-        var take = Math.Max(dailyTarget + 10, 20);
-        var queue = await LoadQueueAsync(connection, userId, deckId, take, dueOrNewOnly: true, cancellationToken);
-        if (queue.Count == 0)
-        {
-            queue = await LoadQueueAsync(connection, userId, deckId, take, dueOrNewOnly: false, cancellationToken);
-        }
-
-        return queue;
     }
 
     private static async Task<List<LearningCard>> LoadQueueAsync(

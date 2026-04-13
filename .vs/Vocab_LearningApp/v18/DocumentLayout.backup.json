@@ -1,26 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\",
+  "WorkspaceRootPath": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta_3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta\\views\\home\\vocab_detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta_3\\views\\home\\vocab_detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\vocab_detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta\\views\\home\\learning.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\learning.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta\\views\\home\\dashboard\\vocabulary.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta_3\\views\\home\\dashboard\\vocabulary.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\dashboard\\vocabulary.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta\\views\\home\\dashboard\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\dashboard\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|d:\\code bt spkt\\c\u002B\u002B\\\u0111\u1ED3 \u00E1n\\vocab_learningapp_beta\\views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20EF0471-A706-497F-84EF-26C1259D3B2D}|Vocab_LearningApp.csproj|solutionrelative:views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -44,65 +32,26 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Vocab_detail.cshtml",
-              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Vocab_detail.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta_3\\Views\\Home\\Vocab_detail.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\Vocab_detail.cshtml",
-              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Vocab_detail.cshtml",
-              "RelativeToolTip": "Views\\Home\\Vocab_detail.cshtml",
-              "ViewState": "AgIAAHgBAAAAAAAAAAAkwIMBAAAJAAAAAAAAAA==",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta_3\\Views\\Home\\Vocab_detail.cshtml*",
+              "RelativeToolTip": "Views\\Home\\Vocab_detail.cshtml*",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAjwE0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T16:46:12.707Z",
+              "WhenOpened": "2026-04-13T14:15:19.601Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Learning.cshtml",
-              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Learning.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Learning.cshtml",
-              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Learning.cshtml",
-              "RelativeToolTip": "Views\\Home\\Learning.cshtml",
-              "ViewState": "AgIAAEIBAAAAAAAAAAAkwFUBAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T16:45:31.883Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "Vocabulary.cshtml",
-              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta_3\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\Dashboard\\Vocabulary.cshtml",
-              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
+              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta_3\\Views\\Home\\Dashboard\\Vocabulary.cshtml",
               "RelativeToolTip": "Views\\Home\\Dashboard\\Vocabulary.cshtml",
-              "ViewState": "AgIAABUBAAAAAAAAAAAkwCgBAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAGUBAAAAAAAAAAAAwIIBAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T16:45:01.883Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Dashboard\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Dashboard\\Dashboard.cshtml",
-              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Dashboard\\Dashboard.cshtml",
-              "RelativeToolTip": "Views\\Home\\Dashboard\\Dashboard.cshtml",
-              "ViewState": "AgIAAOsAAAAAAAAAAAAkwP4AAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T16:44:31.89Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Login.cshtml",
-              "DocumentMoniker": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Login.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Login.cshtml",
-              "ToolTip": "D:\\Code BT SPKT\\C\u002B\u002B\\\u0110\u1ED3 \u00E1n\\Vocab_LearningApp_Beta\\Views\\Home\\Login.cshtml",
-              "RelativeToolTip": "Views\\Home\\Login.cshtml",
-              "ViewState": "AgIAAJcAAAAAAAAAAAAkwKoAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T16:43:18.107Z",
+              "WhenOpened": "2026-04-13T14:11:40.592Z",
               "EditorCaption": ""
             }
           ]

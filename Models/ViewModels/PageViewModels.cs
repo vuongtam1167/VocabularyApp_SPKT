@@ -47,3 +47,19 @@ public sealed class ProgressPageViewModel
     public required AuthenticatedUser User { get; init; }
     public required ProgressOverview Progress { get; init; }
 }
+
+public sealed class CreateDeckPageViewModel
+{
+    public required AuthenticatedUser User { get; init; }
+    public CreateDeckRequest Input { get; init; } = new();
+    public string? ErrorMessage { get; init; }
+}
+
+public sealed class CreateVocabularyPageViewModel
+{
+    public required AuthenticatedUser User { get; init; }
+    public required IReadOnlyList<DeckSummary> Decks { get; init; }
+    public long? SelectedDeckId { get; init; }
+    public CreateVocabularyRequest Input { get; init; } = new();
+    public string? ErrorMessage { get; init; }
+}

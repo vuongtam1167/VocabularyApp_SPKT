@@ -8,6 +8,10 @@
     var featuredDeck = Model.Dashboard.RecentDecks.FirstOrDefault();
     var dailyPlan = Model.Dashboard.DailyPlan;
 }
+@{
+    var avatarUrl = Model.User?.AvatarUrl
+        ?? "/images/avatars/default.jpg";
+}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -36,7 +40,7 @@
                     <p class="text-sm font-semibold">@Model.User.FullName</p>
                     <p class="text-xs text-slate-500">@Model.User.Email</p>
                 </div>
-                <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
+                <img src="@avatarUrl" alt="Avatar" class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
                 <form asp-action="Logout" method="post" class="hidden md:block">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Đăng xuất</button>

@@ -16,6 +16,8 @@
 
     var totalWords = Model.Decks.Sum(deck => deck.TotalWords);
     var publicDecks = Model.Decks.Count(deck => deck.IsPublic);
+    var selectedTag = Model.Tag ?? string.Empty;
+    var selectedSort = string.IsNullOrWhiteSpace(Model.Sort) ? "newest" : Model.Sort;
 }
 
 <!DOCTYPE html>
@@ -63,7 +65,7 @@
                     <p class="text-sm font-semibold uppercase tracking-wide text-white/80">Vocabulary management</p>
                     <h1 class="mt-2 text-3xl font-black sm:text-4xl">Bộ từ vựng của bạn</h1>
                     <p class="mt-3 max-w-2xl text-white/85">
-                        Tạo bộ từ, thêm vocab, gắn tags theo chủ đề và quản lý nội dung học theo cách gọn gàng hơn.
+                        Tạo bộ từ, chỉnh sửa thông tin bộ, gắn tags theo chủ đề và mở chi tiết để quản lý từng từ bên trong.
                     </p>
                 </div>
 
@@ -93,7 +95,7 @@
                        class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
 
                 <select name="tag" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
-                    @if (string.IsNullOrWhiteSpace(Model.Tag))
+                    @if (string.IsNullOrWhiteSpace(selectedTag))
                     {
                         <option value="" selected>Tất cả tag</option>
                     }
@@ -104,7 +106,7 @@
 
                     @foreach (var tag in tags)
                     {
-                        if (Model.Tag == tag)
+                        if (string.Equals(selectedTag, tag, StringComparison.OrdinalIgnoreCase))
                         {
                             <option value="@tag" selected>@tag</option>
                         }
@@ -116,41 +118,10 @@
                 </select>
 
                 <select name="sort" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
-                    @if (string.IsNullOrWhiteSpace(Model.Sort))
-                    {
-                        <option value="" selected>Sắp xếp mặc định</option>
-                    }
-                    else
-                    {
-                        <option value="">Sắp xếp mặc định</option>
-                    }
-
-                    @if (Model.Sort == "newest")
-                    {
-                        <option value="newest" selected>Mới nhất</option>
-                    }
-                    else
-                    {
-                        <option value="newest">Mới nhất</option>
-                    }
-
-                    @if (Model.Sort == "title")
-                    {
-                        <option value="title" selected>Tên bộ A-Z</option>
-                    }
-                    else
-                    {
-                        <option value="title">Tên bộ A-Z</option>
-                    }
-
-                    @if (Model.Sort == "progress")
-                    {
-                        <option value="progress" selected>Tiến độ</option>
-                    }
-                    else
-                    {
-                        <option value="progress">Tiến độ</option>
-                    }
+                    <option value="" selected="@(string.IsNullOrWhiteSpace(selectedSort) ? "selected" : null)">Sắp xếp mặc định</option>
+                    <option value="newest" selected="@(selectedSort == "newest" ? "selected" : null)">Mới nhất</option>
+                    <option value="title" selected="@(selectedSort == "title" ? "selected" : null)">Tên bộ A-Z</option>
+                    <option value="progress" selected="@(selectedSort == "progress" ? "selected" : null)">Tiến độ</option>
                 </select>
 
                 <div class="flex gap-3">
@@ -165,7 +136,7 @@
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900">Danh sách bộ từ</h2>
-                        <p class="mt-1 text-sm text-slate-500">Mở chi tiết để thêm từ, sửa nội dung hoặc bắt đầu học ngay.</p>
+                        <p class="mt-1 text-sm text-slate-500">Mở chi tiết để thêm từ, sửa nội dung bộ hoặc bắt đầu học ngay.</p>
                     </div>
                     <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600">@Model.Decks.Count bộ</span>
                 </div>
@@ -262,18 +233,18 @@
 
                 <div class="mt-4 space-y-3 text-sm text-slate-600">
                     <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Tạo bộ mới theo chủ đề IELTS, Business, Travel...</div>
-                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Mở một bộ để thêm từng từ riêng lẻ.</div>
-                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Chỉnh tiêu đề, mô tả và tags bất cứ lúc nào.</div>
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Chỉnh tên, mô tả, tags và trạng thái công khai bất cứ lúc nào.</div>
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-800">• Vào chi tiết để thêm, sửa, xóa từng từ trong bộ.</div>
                 </div>
 
                 <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                    Dữ liệu được cập nhật ngay qua API nên không cần thao tác trung gian phức tạp.
+                    Dữ liệu được cập nhật qua API nên thao tác nhanh và gọn.
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="deck-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 px-4">
+    <div id="deck-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 px-4">
         <div class="w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl">
             <div class="flex items-start justify-between gap-4">
                 <div>
@@ -281,7 +252,7 @@
                     <h3 id="deck-modal-title" class="mt-1 text-2xl font-bold">Tạo bộ từ mới</h3>
                 </div>
                 <button type="button"
-                        onclick="window.vocabApp.closeModal('deck-modal')"
+                        onclick="closeDeckModal()"
                         class="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200">
                     ×
                 </button>
@@ -317,7 +288,7 @@
 
                 <div class="flex flex-wrap justify-end gap-3 pt-2">
                     <button type="button"
-                            onclick="window.vocabApp.closeModal('deck-modal')"
+                            onclick="closeDeckModal()"
                             class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">
                         Hủy
                     </button>
@@ -330,31 +301,40 @@
     </div>
 
     <script>
-        function openDeckModal(deck) {
-        const modalTitle = document.getElementById('deck-modal-title');
-        const deckId = document.getElementById('deck-id');
-        const title = document.getElementById('deck-title-input');
-        const description = document.getElementById('deck-description-input');
-        const tags = document.getElementById('deck-tags-input');
-        const isPublic = document.getElementById('deck-public-input');
+        const deckModal = document.getElementById('deck-modal');
+        const deckForm = document.getElementById('deck-form');
+        const deckIdInput = document.getElementById('deck-id');
+        const deckTitleInput = document.getElementById('deck-title-input');
+        const deckDescriptionInput = document.getElementById('deck-description-input');
+        const deckTagsInput = document.getElementById('deck-tags-input');
+        const deckPublicInput = document.getElementById('deck-public-input');
+        const deckModalTitle = document.getElementById('deck-modal-title');
 
+        function openDeckModal(deck) {
         if (deck && deck.id) {
-        modalTitle.textContent = 'Chỉnh sửa bộ từ';
-        deckId.value = deck.id;
-        title.value = deck.title || '';
-        description.value = deck.description || '';
-        tags.value = deck.tags || '';
-        isPublic.checked = !!deck.isPublic;
+        deckModalTitle.textContent = 'Chỉnh sửa bộ từ';
+        deckIdInput.value = deck.id;
+        deckTitleInput.value = deck.title || '';
+        deckDescriptionInput.value = deck.description || '';
+        deckTagsInput.value = deck.tags || '';
+        deckPublicInput.checked = !!deck.isPublic;
         } else {
-        modalTitle.textContent = 'Tạo bộ từ mới';
-        deckId.value = '';
-        title.value = '';
-        description.value = '';
-        tags.value = '';
-        isPublic.checked = false;
+        deckModalTitle.textContent = 'Tạo bộ từ mới';
+        deckIdInput.value = '';
+        deckTitleInput.value = '';
+        deckDescriptionInput.value = '';
+        deckTagsInput.value = '';
+        deckPublicInput.checked = false;
         }
 
-        window.vocabApp.openModal('deck-modal');
+        deckModal.classList.remove('hidden');
+        deckModal.classList.add('flex');
+        setTimeout(() => deckTitleInput.focus(), 0);
+        }
+
+        function closeDeckModal() {
+        deckModal.classList.add('hidden');
+        deckModal.classList.remove('flex');
         }
 
         async function deleteDeck(deckId) {
@@ -362,46 +342,57 @@
         return;
         }
 
-        const { response, payload } = await window.vocabApp.requestJson(`/api/decks/${deckId}`, {
+        const response = await fetch(`/api/decks/${deckId}`, {
         method: 'DELETE'
         });
 
+        const payload = await response.json().catch(() => null);
+
         if (!response.ok) {
-        window.vocabApp.toast(payload?.message || 'Không thể xóa bộ từ.', 'error');
+        alert(payload?.message || 'Không thể xóa bộ từ.');
         return;
         }
 
-        window.vocabApp.toast('Đã xóa bộ từ.', 'success');
-        window.vocabApp.safeReload();
+        location.reload();
         }
 
-        document.getElementById('deck-form').addEventListener('submit', async function (event) {
+        deckForm.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        const deckId = document.getElementById('deck-id').value;
-        const payload = {
-        title: document.getElementById('deck-title-input').value.trim(),
-        description: document.getElementById('deck-description-input').value.trim() || null,
-        tags: document.getElementById('deck-tags-input').value.trim() || null,
-        isPublic: document.getElementById('deck-public-input').checked
+        const deckId = deckIdInput.value.trim();
+        const body = {
+        title: deckTitleInput.value.trim(),
+        description: deckDescriptionInput.value.trim() || null,
+        tags: deckTagsInput.value.trim() || null,
+        isPublic: deckPublicInput.checked
         };
+
+        if (!body.title) {
+        alert('Tên bộ từ là bắt buộc.');
+        deckTitleInput.focus();
+        return;
+        }
 
         const url = deckId ? `/api/decks/${deckId}` : '/api/decks';
         const method = deckId ? 'PUT' : 'POST';
 
-        const { response, payload: result } = await window.vocabApp.requestJson(url, {
+        const response = await fetch(url, {
         method,
-        body: JSON.stringify(payload)
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
         });
 
+        const payload = await response.json().catch(() => null);
+
         if (!response.ok) {
-        window.vocabApp.toast(result?.message || 'Không thể lưu bộ từ.', 'error');
+        alert(payload?.message || 'Không thể lưu bộ từ.');
         return;
         }
 
-        window.vocabApp.toast(result?.message || 'Đã lưu bộ từ.', 'success');
-        window.vocabApp.closeModal('deck-modal');
-        window.vocabApp.safeReload();
+        closeDeckModal();
+        location.reload();
         });
     </script>
 </body>

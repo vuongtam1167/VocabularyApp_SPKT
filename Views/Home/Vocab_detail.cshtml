@@ -1,319 +1,597 @@
 ﻿@using System
 @using System.Linq
+@using System.Collections.Generic
 @using System.Text.Json
 @model Vocab_LearningApp.Models.ViewModels.DeckDetailPageViewModel
+
 @{
     Layout = null;
-    ViewData["Title"] = "Chi tiết bộ từ";
+    ViewData["Title"] = Model.Deck.Title;
+
+    var deck = Model.Deck;
+    var items = deck.VocabularyItems ?? Array.Empty<Vocab_LearningApp.Models.Domain.VocabularyItem>();
+    var userFullName = Model.User?.FullName ?? "User";
+    var avatarUrl = Model.User?.AvatarUrl
+        ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userFullName)}&background=4f46e5&color=fff";
+
+    var selectedStatus = string.IsNullOrWhiteSpace(Model.Status) ? string.Empty : Model.Status;
+    var selectedSort = string.IsNullOrWhiteSpace(Model.Sort) ? "newest" : Model.Sort;
+    var searchValue = Model.Search ?? string.Empty;
+
+    var deckData = new
+    {
+        id = deck.Id,
+        title = deck.Title,
+        description = deck.Description ?? string.Empty,
+        tags = deck.Tags ?? string.Empty,
+        isPublic = deck.IsPublic
+    };
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết bộ từ - VocabMaster</title>
+    <title>@Model.Deck.Title - VocabMaster</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a asp-controller="Home" asp-action="Vocabulary" class="flex items-center gap-3">
-                <span class="text-2xl">📚</span>
+            <div class="flex items-center gap-3">
+                <a asp-controller="Home" asp-action="Vocabulary" class="rounded-2xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                    ← Quay lại
+                </a>
                 <div>
                     <p class="text-sm font-bold uppercase tracking-wide text-indigo-600">VocabMaster</p>
-                    <p class="text-xs text-slate-500">Deck detail</p>
+                    <p class="text-xs text-slate-500">Quản lý từ trong bộ</p>
                 </div>
-            </a>
+            </div>
+
             <nav class="hidden items-center gap-6 md:flex">
                 <a asp-controller="Home" asp-action="Dashboard" class="text-slate-600 hover:text-slate-900">Dashboard</a>
-                <a asp-controller="Home" asp-action="Vocabulary" class="text-slate-600 hover:text-slate-900">Bộ từ vựng</a>
+                <a asp-controller="Home" asp-action="Vocabulary" class="font-semibold text-indigo-600">Bộ từ vựng</a>
                 <a asp-controller="Home" asp-action="Progress" class="text-slate-600 hover:text-slate-900">Tiến độ</a>
             </nav>
+
             <div class="flex items-center gap-3">
-                <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")" alt="Avatar" class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
-                <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@Model.Deck.Id" class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Học ngay</a>
+                <img src="@avatarUrl"
+                     alt="Avatar"
+                     class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
             </div>
         </div>
     </header>
 
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <section class="mb-8 rounded-[2rem] bg-gradient-to-br from-slate-900 via-indigo-900 to-fuchsia-900 p-6 text-white shadow-xl">
-            <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <section class="rounded-[2rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 text-white shadow-xl">
+            <div class="grid gap-6 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">@Model.Deck.Tags</span>
-                        <span class="rounded-full @(Model.Deck.IsPublic ? "bg-emerald-400/20" : "bg-white/15") px-3 py-1 text-xs font-semibold">@(Model.Deck.IsPublic ? "Public" : "Private")</span>
+                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">@((deck.IsPublic) ? "Public" : "Private")</span>
+                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
+                            @(string.IsNullOrWhiteSpace(deck.Tags)
+                                ? "No tag"
+                                : deck.Tags.Split(',').FirstOrDefault()?.Trim())
+                        </span>
                     </div>
-                    <h1 class="mt-4 text-3xl font-black sm:text-4xl">@Model.Deck.Title</h1>
-                    <p class="mt-3 max-w-3xl text-white/85">@(Model.Deck.Description ?? "Bộ từ này chưa có mô tả.")</p>
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@Model.Deck.Id" class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-50">Bắt đầu học</a>
-                        <button type="button" onclick="openDeckModal()" class="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20">Sửa bộ từ</button>
-                        <button type="button" onclick="openVocabularyModal()" class="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20">Thêm từ</button>
-                        <a href="/api/decks/@Model.Deck.Id/export?format=csv" class="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20">Export CSV</a>
-                        <a href="/api/decks/@Model.Deck.Id/export?format=xlsx" class="rounded-2xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20">Export Excel</a>
+
+                    <h1 class="mt-3 text-3xl font-black sm:text-4xl">@deck.Title</h1>
+                    <p class="mt-3 max-w-3xl text-white/85">@((string.IsNullOrWhiteSpace(deck.Description)) ? "Bộ từ này chưa có mô tả." : deck.Description)</p>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <button type="button"
+                                onclick='openDeckModal(@Html.Raw(JsonSerializer.Serialize(deckData)))'
+                                class="rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-slate-100">
+                            Sửa bộ
+                        </button>
+
+                        <button type="button"
+                                onclick="openVocabularyModal()"
+                                class="rounded-2xl bg-slate-950/25 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-950/35">
+                            + Thêm từ mới
+                        </button>
+
+                        <a asp-controller="Home"
+                               asp-action="Learning"
+                               asp-route-deckId="@deck.Id"
+                               class="rounded-2xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600">
+                            Học ngay
+                        </a>
+
+                        <a asp-action="Vocab_detail"
+                               asp-route-deckId="@deck.Id"
+                               asp-route-format="csv"
+                               asp-route-export="true"
+                               class="hidden">
+                        </a>
                     </div>
                 </div>
-                <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur"><p class="text-sm text-white/80">Tổng từ</p><p class="mt-2 text-3xl font-black">@Model.Deck.TotalWords</p></div>
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur"><p class="text-sm text-white/80">Đã học</p><p class="mt-2 text-3xl font-black">@Model.Deck.LearnedWords</p></div>
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur"><p class="text-sm text-white/80">Cần ôn</p><p class="mt-2 text-3xl font-black">@Model.Deck.DueWords</p></div>
+
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Tổng từ</p>
+                        <p class="mt-2 text-3xl font-black">@deck.TotalWords</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Đang học</p>
+                        <p class="mt-2 text-3xl font-black">@deck.LearnedWords</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Cần ôn</p>
+                        <p class="mt-2 text-3xl font-black">@deck.DueWords</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur">
+                        <p class="text-sm text-white/80">Tiến độ</p>
+                        <p class="mt-2 text-3xl font-black">@deck.ProgressPercentage%</p>
+                    </div>
                 </div>
             </div>
-            <div class="mt-6">
-                <div class="mb-2 flex justify-between text-sm text-white/80">
-                    <span>Tiến độ học tập</span>
-                    <span class="font-semibold">@Model.Deck.ProgressPercentage%</span>
-                </div>
-                <div class="h-3 overflow-hidden rounded-full bg-white/15">
-                    <div class="h-3 rounded-full bg-white" style="width:@Model.Deck.ProgressPercentage%"></div>
-                </div>
+
+            <div class="mt-6 h-2 overflow-hidden rounded-full bg-white/20">
+                <div class="h-2 rounded-full bg-white" style="width: @deck.ProgressPercentage%;"></div>
             </div>
         </section>
 
-        <form method="get" asp-action="Vocab_detail" class="mb-6 rounded-[2rem] bg-white p-4 shadow-sm ring-1 ring-slate-200">
-            <input type="hidden" name="deckId" value="@Model.Deck.Id" />
-            <div class="grid gap-4 md:grid-cols-[1.3fr_1fr_1fr_auto]">
-                <input type="text" name="search" value="@Model.Search" placeholder="Tìm kiếm từ vựng..." class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+        <section class="mt-8 rounded-[2rem] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <form method="get" asp-action="Vocab_detail" class="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
+                <input type="hidden" name="deckId" value="@deck.Id" />
+
+                <input type="text"
+                       name="search"
+                       value="@searchValue"
+                       placeholder="Tìm từ, nghĩa, ví dụ..."
+                       class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+
                 <select name="status" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
-                    <option value="" selected="@(string.IsNullOrWhiteSpace(Model.Status) ? "selected" : null)">Tất cả trạng thái</option>
-                    <option value="new" selected="@(Model.Status == "new" ? "selected" : null)">Chưa học</option>
-                    <option value="learning" selected="@(Model.Status == "learning" ? "selected" : null)">Đang học</option>
-                    <option value="reviewing" selected="@(Model.Status == "reviewing" ? "selected" : null)">Cần ôn</option>
-                    <option value="mastered" selected="@(Model.Status == "mastered" ? "selected" : null)">Thành thạo</option>
+                    <option value="" selected="@(string.IsNullOrWhiteSpace(selectedStatus) ? "selected" : null)">Tất cả trạng thái</option>
+                    <option value="new" selected="@(selectedStatus == "new" ? "selected" : null)">Chưa học</option>
+                    <option value="learning" selected="@(selectedStatus == "learning" ? "selected" : null)">Đang học</option>
+                    <option value="reviewing" selected="@(selectedStatus == "reviewing" ? "selected" : null)">Cần ôn</option>
+                    <option value="mastered" selected="@(selectedStatus == "mastered" ? "selected" : null)">Thành thạo</option>
                 </select>
+
                 <select name="sort" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
-                    <option value="az" selected="@(string.IsNullOrWhiteSpace(Model.Sort) || Model.Sort == "az" ? "selected" : null)">A-Z</option>
-                    <option value="za" selected="@(Model.Sort == "za" ? "selected" : null)">Z-A</option>
-                    <option value="newest" selected="@(Model.Sort == "newest" ? "selected" : null)">Mới nhất</option>
-                    <option value="oldest" selected="@(Model.Sort == "oldest" ? "selected" : null)">Cũ nhất</option>
+                    <option value="newest" selected="@(selectedSort == "newest" ? "selected" : null)">Mới nhất</option>
+                    <option value="oldest" selected="@(selectedSort == "oldest" ? "selected" : null)">Cũ nhất</option>
+                    <option value="az" selected="@(selectedSort == "az" ? "selected" : null)">A → Z</option>
+                    <option value="za" selected="@(selectedSort == "za" ? "selected" : null)">Z → A</option>
+                    <option value="due" selected="@(selectedSort == "due" ? "selected" : null)">Cần ôn trước</option>
                 </select>
-                <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">Lọc</button>
+
+                <div class="flex gap-3">
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">Lọc</button>
+                    <a asp-action="Vocab_detail" asp-route-deckId="@deck.Id" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">Xóa lọc</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="mt-6">
+            <div class="mb-4 flex items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Từ trong bộ</h2>
+                    <p class="mt-1 text-sm text-slate-500">Thêm, sửa, xóa từng từ trực tiếp trong bộ này.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a asp-controller="Home"
+                           asp-action="Learning"
+                           asp-route-deckId="@deck.Id"
+                           class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                        Học ngay
+                    </a>
+                </div>
             </div>
-        </form>
 
-        @if (Model.Deck.VocabularyItems.Any())
-        {
-            <div class="space-y-4">
-                @foreach (var item in Model.Deck.VocabularyItems)
-                {
-                    var statusKey = item.Status?.ToLowerInvariant() ?? "new";
-                    var badgeClass = statusKey switch
+            @if (items.Any())
+            {
+                <div class="grid gap-4 xl:grid-cols-2">
+                    @foreach (var item in items)
                     {
-                        "mastered" => "bg-emerald-100 text-emerald-700",
-                        "learning" => "bg-orange-100 text-orange-700",
-                        "reviewing" => "bg-yellow-100 text-yellow-700",
-                        _ => "bg-sky-100 text-sky-700"
-                    };
-                    var statusLabel = statusKey switch
-                    {
-                        "mastered" => "Thành thạo",
-                        "learning" => "Đang học",
-                        "reviewing" => item.IsDue ? "Cần ôn" : "Đang ôn",
-                        _ => "Chưa học"
-                    };
+                        var vocabData = new
+                        {
+                            id = item.Id,
+                            word = item.Word,
+                            pronunciation = item.Pronunciation ?? string.Empty,
+                            partOfSpeech = item.PartOfSpeech,
+                            meaningVi = item.MeaningVi ?? string.Empty,
+                            descriptionEn = item.DescriptionEn ?? string.Empty,
+                            exampleSentence = item.ExampleSentence ?? string.Empty,
+                            collocations = item.Collocations ?? string.Empty,
+                            relatedWords = item.RelatedWords ?? string.Empty,
+                            note = item.Note ?? string.Empty,
+                            imageUrl = item.ImageUrl ?? string.Empty,
+                            audioUrl = item.AudioUrl ?? string.Empty
+                        };
 
-                    <article class="rounded-[2rem] bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-lg">
-                        <div class="p-6">
-                            <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                                <div class="flex-1">
-                                    <div class="flex flex-wrap items-center gap-3">
-                                        <h2 class="text-2xl font-black">@item.Word</h2>
-                                        <span class="text-sm text-slate-500">@item.Pronunciation</span>
-                                        @if (!string.IsNullOrWhiteSpace(item.AudioUrl))
+                        <article class="rounded-[2rem] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">@item.Status</span>
+                                        @if (item.IsDue)
                                         {
-                                            <a href="@item.AudioUrl" target="_blank" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-200">Audio</a>
+                                            <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">Cần ôn</span>
                                         }
                                     </div>
-                                    <p class="mt-3 text-slate-600"><strong>Nghĩa:</strong> @(item.MeaningVi ?? "Chưa cập nhật")</p>
-                                    <p class="mt-2 text-slate-600"><strong>Mô tả:</strong> @(item.DescriptionEn ?? "Chưa cập nhật")</p>
-                                    <p class="mt-2 text-slate-600"><strong>Ví dụ:</strong> <em>@(item.ExampleSentence ?? "Chưa có ví dụ")</em></p>
-                                    <p class="mt-2 text-slate-600"><strong>Collocation:</strong> @(item.Collocations ?? "Chưa cập nhật")</p>
-                                    <p class="mt-2 text-slate-600"><strong>Từ liên quan:</strong> @(item.RelatedWords ?? "Chưa cập nhật")</p>
-                                    <p class="mt-3 text-sm text-slate-500">SRS: EF @item.EaseFactor.ToString("0.00") • Lặp @item.Repetitions • Lịch ôn @(item.NextReviewDate?.ToString("dd/MM/yyyy") ?? "chưa có")</p>
+                                    <h3 class="mt-3 text-xl font-bold text-slate-900">@item.Word</h3>
+                                    <p class="mt-1 text-sm text-slate-500">
+                                        @if (!string.IsNullOrWhiteSpace(item.Pronunciation))
+                                        {
+                                            <span>@item.Pronunciation</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Chưa có phiên âm</span>
+                                        }
+                                        @if (item.PartOfSpeech.HasValue)
+                                        {
+                                            <span class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">POS: @item.PartOfSpeech</span>
+                                        }
+                                    </p>
                                 </div>
-                                <div class="flex flex-col items-end gap-2">
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold @badgeClass">@statusLabel</span>
-                                    @if (item.IsDue)
+
+                                <div class="text-right text-sm text-slate-500">
+                                    <p>@item.CreatedAt.ToString("dd/MM/yyyy")</p>
+                                    @if (item.NextReviewDate.HasValue)
                                     {
-                                        <span class="text-xs font-semibold text-orange-600">Đến hạn ôn</span>
+                                        <p class="mt-1">Ôn lại: @item.NextReviewDate.Value.ToString("dd/MM/yyyy")</p>
                                     }
                                 </div>
                             </div>
-                            <div class="mt-5 flex flex-wrap gap-2">
-                                <a asp-controller="Home" asp-action="Learning" asp-route-deckId="@Model.Deck.Id" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">@(item.Status == "new" ? "Học ngay" : "Học lại")</a>
-                                <button type="button" onclick='openVocabularyModal(@Html.Raw(JsonSerializer.Serialize(new { id = item.Id, word = item.Word, pronunciation = item.Pronunciation ?? string.Empty, partOfSpeech = item.PartOfSpeech, meaningVi = item.MeaningVi ?? string.Empty, descriptionEn = item.DescriptionEn ?? string.Empty, exampleSentence = item.ExampleSentence ?? string.Empty, collocations = item.Collocations ?? string.Empty, relatedWords = item.RelatedWords ?? string.Empty, note = item.Note ?? string.Empty, imageUrl = item.ImageUrl ?? string.Empty, audioUrl = item.AudioUrl ?? string.Empty })))' class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Sửa</button>
-                                <button type="button" onclick="deleteVocabulary(@item.Id)" class="rounded-xl border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50">Xóa</button>
-                            </div>
-                        </div>
-                    </article>
-                }
 
-                @if (Model.Deck.Pagination.TotalPages > 1)
-                {
-                    <div class="flex flex-wrap items-center justify-center gap-2 py-6">
-                        <a asp-action="Vocab_detail" asp-route-deckId="@Model.Deck.Id" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sort="@Model.Sort" asp-route-pageNumber="@(Model.Deck.Pagination.Page - 1)" class="rounded-xl border border-slate-200 px-4 py-2 hover:bg-slate-50 @(Model.Deck.Pagination.HasPreviousPage ? string.Empty : "pointer-events-none opacity-50")">Trước</a>
-                        @for (var pageNumber = 1; pageNumber <= Model.Deck.Pagination.TotalPages; pageNumber++)
-                        {
-                            <a asp-action="Vocab_detail" asp-route-deckId="@Model.Deck.Id" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sort="@Model.Sort" asp-route-pageNumber="@pageNumber" class="rounded-xl px-4 py-2 @(pageNumber == Model.Deck.Pagination.Page ? "bg-indigo-600 text-white" : "border border-slate-200 hover:bg-slate-50")">@pageNumber</a>
-                        }
-                        <a asp-action="Vocab_detail" asp-route-deckId="@Model.Deck.Id" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sort="@Model.Sort" asp-route-pageNumber="@(Model.Deck.Pagination.Page + 1)" class="rounded-xl border border-slate-200 px-4 py-2 hover:bg-slate-50 @(Model.Deck.Pagination.HasNextPage ? string.Empty : "pointer-events-none opacity-50")">Sau</a>
+                            <div class="mt-4 space-y-3 text-sm text-slate-700">
+                                @if (!string.IsNullOrWhiteSpace(item.MeaningVi))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Nghĩa:</span> @item.MeaningVi</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.DescriptionEn))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Giải thích:</span> @item.DescriptionEn</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.ExampleSentence))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Ví dụ:</span> @item.ExampleSentence</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.Collocations))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Collocations:</span> @item.Collocations</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.RelatedWords))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Related words:</span> @item.RelatedWords</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.Note))
+                                {
+                                    <p><span class="font-semibold text-slate-900">Ghi chú:</span> @item.Note</p>
+                                }
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap gap-2">
+                                <button type="button"
+                                        onclick='openVocabularyModal(@Html.Raw(JsonSerializer.Serialize(vocabData)))'
+                                        class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                                    Sửa từ
+                                </button>
+                                <button type="button"
+                                        onclick="deleteVocabulary(@item.Id)"
+                                        class="rounded-xl border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50">
+                                    Xóa
+                                </button>
+                            </div>
+                        </article>
+                    }
+                </div>
+
+                <div class="mt-6 flex items-center justify-between gap-3 rounded-[2rem] bg-white p-4 shadow-sm ring-1 ring-slate-200">
+                    <div class="text-sm text-slate-500">
+                        Trang @deck.Pagination.Page / @deck.Pagination.TotalPages • @deck.Pagination.TotalItems từ
                     </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="rounded-[2rem] border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">Không có từ nào khớp bộ lọc hiện tại.</div>
-        }
+
+                    <div class="flex items-center gap-2">
+                        @if (deck.Pagination.HasPreviousPage)
+                        {
+                            <a asp-action="Vocab_detail"
+                                   asp-route-deckId="@deck.Id"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-status="@Model.Status"
+                                   asp-route-sort="@Model.Sort"
+                                   asp-route-pageNumber="@(deck.Pagination.Page - 1)"
+                                   class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                                Trước
+                            </a>
+                        }
+
+                        @if (deck.Pagination.HasNextPage)
+                        {
+                            <a asp-action="Vocab_detail"
+                                   asp-route-deckId="@deck.Id"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-status="@Model.Status"
+                                   asp-route-sort="@Model.Sort"
+                                   asp-route-pageNumber="@(deck.Pagination.Page + 1)"
+                                   class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                                Sau
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="rounded-[2rem] border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">
+                    Chưa có từ nào trong bộ này. Hãy thêm từ đầu tiên để bắt đầu.
+                    <div class="mt-5">
+                        <button type="button"
+                                onclick="openVocabularyModal()"
+                                class="rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700">
+                            + Thêm từ mới
+                        </button>
+                    </div>
+                </div>
+            }
+        </section>
     </main>
 
-    <div id="deck-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 px-4">
-        <div class="w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl">
-            <div class="flex items-start justify-between gap-4">
+    <div id="deck-modal" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/50 px-4 py-6">
+        <div class="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
                 <div>
                     <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Deck form</p>
-                    <h3 class="mt-1 text-2xl font-bold">Sửa bộ từ</h3>
+                    <h3 id="deck-modal-title" class="mt-1 text-2xl font-bold">Chỉnh sửa bộ từ</h3>
                 </div>
-                <button type="button" onclick="window.vocabApp.closeModal('deck-modal')" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200">×</button>
+                <button type="button" onclick="closeDeckModal()" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200">×</button>
             </div>
-            <form id="deck-form" class="mt-6 grid gap-4">
-                <input type="hidden" id="deck-id" value="@Model.Deck.Id">
+
+            <form id="deck-form" class="max-h-[calc(90vh-88px)] overflow-y-auto px-6 py-5 grid gap-4">
+                <input type="hidden" id="deck-id">
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-slate-700">Tên bộ từ</label>
-                    <input type="text" id="deck-title-input" value="@Model.Deck.Title" required class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    <input type="text" id="deck-title-input" required
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-slate-700">Mô tả</label>
-                    <textarea id="deck-description-input" rows="4" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">@Model.Deck.Description</textarea>
+                    <textarea id="deck-description-input" rows="4"
+                              class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"></textarea>
                 </div>
+
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Tags</label>
-                        <input type="text" id="deck-tags-input" value="@Model.Deck.Tags" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                        <input type="text" id="deck-tags-input"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
+
                     <label class="flex items-center gap-2 self-end rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                        <input type="checkbox" id="deck-public-input" @(Model.Deck.IsPublic ? "checked" : null) class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"> Public deck
+                        <input type="checkbox" id="deck-public-input" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        Public deck
                     </label>
                 </div>
+
                 <div class="flex flex-wrap justify-end gap-3 pt-2">
-                    <button type="button" onclick="window.vocabApp.closeModal('deck-modal')" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">Hủy</button>
-                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">Lưu</button>
+                    <button type="button"
+                            onclick="closeDeckModal()"
+                            class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">
+                        Hủy
+                    </button>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">
+                        Lưu
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="vocab-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 px-4">
-        <div class="w-full max-w-3xl rounded-[2rem] bg-white p-6 shadow-2xl">
-            <div class="flex items-start justify-between gap-4">
+    <div id="vocabulary-modal" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/50 px-4 py-6">
+        <div class="w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wide text-emerald-600">Vocabulary form</p>
-                    <h3 id="vocab-modal-title" class="mt-1 text-2xl font-bold">Thêm từ mới</h3>
+                    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Vocabulary form</p>
+                    <h3 id="vocabulary-modal-title" class="mt-1 text-2xl font-bold">Thêm từ mới</h3>
                 </div>
-                <button type="button" onclick="window.vocabApp.closeModal('vocab-modal')" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200">×</button>
+                <button type="button" onclick="closeVocabularyModal()" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200">×</button>
             </div>
-            <form id="vocab-form" class="mt-6 grid gap-4">
-                <input type="hidden" id="vocab-id">
+
+            <form id="vocabulary-form" class="max-h-[calc(90vh-88px)] overflow-y-auto px-6 py-5 grid gap-4">
+                <input type="hidden" id="vocabulary-id">
+
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Word</label>
-                        <input type="text" id="vocab-word" required class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        <input type="text" id="vocabulary-word-input" maxlength="50" required
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Pronunciation</label>
-                        <input type="text" id="vocab-pronunciation" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        <input type="text" id="vocabulary-pronunciation-input" maxlength="50"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
                 </div>
-                <div class="grid gap-4 md:grid-cols-3">
-                    <div>
-                        <label class="mb-2 block text-sm font-medium text-slate-700">Part of speech</label>
-                        <select id="vocab-pos" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                            <option value="">Không chọn</option>
-                            <option value="1">Noun</option>
-                            <option value="2">Verb</option>
-                            <option value="3">Adjective</option>
-                            <option value="4">Adverb</option>
-                            <option value="5">Phrase</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-slate-700">Meaning (VI)</label>
-                        <input type="text" id="vocab-meaning" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                    </div>
-                </div>
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Description (EN)</label>
-                    <textarea id="vocab-description" rows="3" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"></textarea>
-                </div>
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Example sentence</label>
-                    <textarea id="vocab-example" rows="3" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"></textarea>
-                </div>
+
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-slate-700">Collocation</label>
-                        <input type="text" id="vocab-collocations" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Part of speech</label>
+                        <input type="number" id="vocabulary-pos-input"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                               placeholder="Ví dụ: 1, 2, 3...">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Meaning (VI)</label>
+                        <input type="text" id="vocabulary-meaning-input" maxlength="255"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Description (EN)</label>
+                    <input type="text" id="vocabulary-description-input" maxlength="255"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Example sentence</label>
+                    <textarea id="vocabulary-example-input" rows="3" maxlength="255"
+                              class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"></textarea>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Collocations</label>
+                        <input type="text" id="vocabulary-collocations-input" maxlength="100"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Related words</label>
-                        <input type="text" id="vocab-related" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        <input type="text" id="vocabulary-related-input" maxlength="255"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
                 </div>
+
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-slate-700">Note</label>
-                        <input type="text" id="vocab-note" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Image URL</label>
+                        <input type="text" id="vocabulary-image-input" maxlength="255"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-700">Image URL</label>
-                            <input type="url" id="vocab-image" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                        </div>
-                        <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-700">Audio URL</label>
-                            <input type="url" id="vocab-audio" class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                        </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Audio URL</label>
+                        <input type="text" id="vocabulary-audio-input" maxlength="255"
+                               class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
                     </div>
                 </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Note</label>
+                    <textarea id="vocabulary-note-input" rows="3" maxlength="255"
+                              class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"></textarea>
+                </div>
+
                 <div class="flex flex-wrap justify-end gap-3 pt-2">
-                    <button type="button" onclick="window.vocabApp.closeModal('vocab-modal')" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">Hủy</button>
-                    <button type="submit" class="rounded-2xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700">Lưu từ</button>
+                    <button type="button" onclick="closeVocabularyModal()" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50">
+                        Hủy
+                    </button>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">
+                        Lưu từ
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function openDeckModal() {
-        window.vocabApp.openModal('deck-modal');
+        const deckModal = document.getElementById('deck-modal');
+        const vocabularyModal = document.getElementById('vocabulary-modal');
+
+        const deckForm = document.getElementById('deck-form');
+        const deckIdInput = document.getElementById('deck-id');
+        const deckTitleInput = document.getElementById('deck-title-input');
+        const deckDescriptionInput = document.getElementById('deck-description-input');
+        const deckTagsInput = document.getElementById('deck-tags-input');
+        const deckPublicInput = document.getElementById('deck-public-input');
+        const deckModalTitle = document.getElementById('deck-modal-title');
+
+        const vocabularyForm = document.getElementById('vocabulary-form');
+        const vocabularyIdInput = document.getElementById('vocabulary-id');
+        const vocabularyWordInput = document.getElementById('vocabulary-word-input');
+        const vocabularyPronunciationInput = document.getElementById('vocabulary-pronunciation-input');
+        const vocabularyPosInput = document.getElementById('vocabulary-pos-input');
+        const vocabularyMeaningInput = document.getElementById('vocabulary-meaning-input');
+        const vocabularyDescriptionInput = document.getElementById('vocabulary-description-input');
+        const vocabularyExampleInput = document.getElementById('vocabulary-example-input');
+        const vocabularyCollocationsInput = document.getElementById('vocabulary-collocations-input');
+        const vocabularyRelatedInput = document.getElementById('vocabulary-related-input');
+        const vocabularyNoteInput = document.getElementById('vocabulary-note-input');
+        const vocabularyImageInput = document.getElementById('vocabulary-image-input');
+        const vocabularyAudioInput = document.getElementById('vocabulary-audio-input');
+        const vocabularyModalTitle = document.getElementById('vocabulary-modal-title');
+
+        function openDeckModal(deck) {
+        if (deck && deck.id) {
+        deckModalTitle.textContent = 'Chỉnh sửa bộ từ';
+        deckIdInput.value = deck.id;
+        deckTitleInput.value = deck.title || '';
+        deckDescriptionInput.value = deck.description || '';
+        deckTagsInput.value = deck.tags || '';
+        deckPublicInput.checked = !!deck.isPublic;
+        } else {
+        deckModalTitle.textContent = 'Chỉnh sửa bộ từ';
+        deckIdInput.value = '@deck.Id';
+        deckTitleInput.value = '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(deck.Title))';
+        deckDescriptionInput.value = '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(deck.Description ?? string.Empty))';
+        deckTagsInput.value = '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(deck.Tags ?? string.Empty))';
+        deckPublicInput.checked = @(deck.IsPublic ? "true" : "false");
+        }
+
+        deckModal.classList.remove('hidden');
+        deckModal.classList.add('flex');
+        setTimeout(() => deckTitleInput.focus(), 0);
+        }
+
+        function closeDeckModal() {
+        deckModal.classList.add('hidden');
+        deckModal.classList.remove('flex');
         }
 
         function openVocabularyModal(vocab) {
-        const modalTitle = document.getElementById('vocab-modal-title');
-        const vocabId = document.getElementById('vocab-id');
-
         if (vocab && vocab.id) {
-        modalTitle.textContent = 'Chỉnh sửa từ vựng';
-        vocabId.value = vocab.id;
-        document.getElementById('vocab-word').value = vocab.word || '';
-        document.getElementById('vocab-pronunciation').value = vocab.pronunciation || '';
-        document.getElementById('vocab-pos').value = vocab.partOfSpeech || '';
-        document.getElementById('vocab-meaning').value = vocab.meaningVi || '';
-        document.getElementById('vocab-description').value = vocab.descriptionEn || '';
-        document.getElementById('vocab-example').value = vocab.exampleSentence || '';
-        document.getElementById('vocab-collocations').value = vocab.collocations || '';
-        document.getElementById('vocab-related').value = vocab.relatedWords || '';
-        document.getElementById('vocab-note').value = vocab.note || '';
-        document.getElementById('vocab-image').value = vocab.imageUrl || '';
-        document.getElementById('vocab-audio').value = vocab.audioUrl || '';
+        vocabularyModalTitle.textContent = 'Chỉnh sửa từ';
+        vocabularyIdInput.value = vocab.id;
+        vocabularyWordInput.value = vocab.word || '';
+        vocabularyPronunciationInput.value = vocab.pronunciation || '';
+        vocabularyPosInput.value = vocab.partOfSpeech ?? '';
+        vocabularyMeaningInput.value = vocab.meaningVi || '';
+        vocabularyDescriptionInput.value = vocab.descriptionEn || '';
+        vocabularyExampleInput.value = vocab.exampleSentence || '';
+        vocabularyCollocationsInput.value = vocab.collocations || '';
+        vocabularyRelatedInput.value = vocab.relatedWords || '';
+        vocabularyNoteInput.value = vocab.note || '';
+        vocabularyImageInput.value = vocab.imageUrl || '';
+        vocabularyAudioInput.value = vocab.audioUrl || '';
         } else {
-        modalTitle.textContent = 'Thêm từ mới';
-        vocabId.value = '';
-        document.getElementById('vocab-form').reset();
+        vocabularyModalTitle.textContent = 'Thêm từ mới';
+        vocabularyIdInput.value = '';
+        vocabularyWordInput.value = '';
+        vocabularyPronunciationInput.value = '';
+        vocabularyPosInput.value = '';
+        vocabularyMeaningInput.value = '';
+        vocabularyDescriptionInput.value = '';
+        vocabularyExampleInput.value = '';
+        vocabularyCollocationsInput.value = '';
+        vocabularyRelatedInput.value = '';
+        vocabularyNoteInput.value = '';
+        vocabularyImageInput.value = '';
+        vocabularyAudioInput.value = '';
         }
 
-        window.vocabApp.openModal('vocab-modal');
+        vocabularyModal.classList.remove('hidden');
+        vocabularyModal.classList.add('flex');
+        setTimeout(() => vocabularyWordInput.focus(), 0);
+        }
+
+        function closeVocabularyModal() {
+        vocabularyModal.classList.add('hidden');
+        vocabularyModal.classList.remove('flex');
+        }
+
+        async function deleteDeck(deckId) {
+        if (!confirm('Bạn chắc chắn muốn xóa bộ từ này?')) {
+        return;
+        }
+
+        const response = await fetch(`/api/decks/${deckId}`, {
+        method: 'DELETE'
+        });
+
+        const payload = await response.json().catch(() => null);
+
+        if (!response.ok) {
+        alert(payload?.message || 'Không thể xóa bộ từ.');
+        return;
+        }
+
+        window.location.href = '@Url.Action("Vocabulary", "Home")';
         }
 
         async function deleteVocabulary(vocabularyId) {
@@ -321,78 +599,108 @@
         return;
         }
 
-        const { response, payload } = await window.vocabApp.requestJson(`/api/decks/vocabularies/${vocabularyId}`, {
+        const response = await fetch(`/api/decks/vocabularies/${vocabularyId}`, {
         method: 'DELETE'
         });
 
+        const payload = await response.json().catch(() => null);
+
         if (!response.ok) {
-        window.vocabApp.toast(payload?.message || 'Không thể xóa từ.', 'error');
+        alert(payload?.message || 'Không thể xóa từ vựng.');
         return;
         }
 
-        window.vocabApp.toast('Đã xóa từ vựng.', 'success');
-        window.vocabApp.safeReload();
+        location.reload();
         }
 
-        document.getElementById('deck-form').addEventListener('submit', async function (event) {
+        deckForm.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        const payload = {
-        title: document.getElementById('deck-title-input').value.trim(),
-        description: document.getElementById('deck-description-input').value.trim() || null,
-        tags: document.getElementById('deck-tags-input').value.trim() || null,
-        isPublic: document.getElementById('deck-public-input').checked
+        const deckId = deckIdInput.value.trim();
+        const body = {
+        title: deckTitleInput.value.trim(),
+        description: deckDescriptionInput.value.trim() || null,
+        tags: deckTagsInput.value.trim() || null,
+        isPublic: deckPublicInput.checked
         };
 
-        const { response, payload: result } = await window.vocabApp.requestJson(`/api/decks/@Model.Deck.Id`, {
+        if (!body.title) {
+        alert('Tên bộ từ là bắt buộc.');
+        deckTitleInput.focus();
+        return;
+        }
+
+        const response = await fetch(`/api/decks/${deckId}`, {
         method: 'PUT',
-        body: JSON.stringify(payload)
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
         });
 
+        const payload = await response.json().catch(() => null);
+
         if (!response.ok) {
-        window.vocabApp.toast(result?.message || 'Không thể lưu bộ từ.', 'error');
+        alert(payload?.message || 'Không thể cập nhật bộ từ.');
         return;
         }
 
-        window.vocabApp.toast(result?.message || 'Đã cập nhật bộ từ.', 'success');
-        window.vocabApp.closeModal('deck-modal');
-        window.vocabApp.safeReload();
+        closeDeckModal();
+        location.reload();
         });
 
-        document.getElementById('vocab-form').addEventListener('submit', async function (event) {
+        vocabularyForm.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        const vocabId = document.getElementById('vocab-id').value;
-        const payload = {
-        word: document.getElementById('vocab-word').value.trim(),
-        pronunciation: document.getElementById('vocab-pronunciation').value.trim() || null,
-        partOfSpeech: document.getElementById('vocab-pos').value ? Number(document.getElementById('vocab-pos').value) : null,
-        meaningVi: document.getElementById('vocab-meaning').value.trim() || null,
-        descriptionEn: document.getElementById('vocab-description').value.trim() || null,
-        exampleSentence: document.getElementById('vocab-example').value.trim() || null,
-        collocations: document.getElementById('vocab-collocations').value.trim() || null,
-        relatedWords: document.getElementById('vocab-related').value.trim() || null,
-        note: document.getElementById('vocab-note').value.trim() || null,
-        imageUrl: document.getElementById('vocab-image').value.trim() || null,
-        audioUrl: document.getElementById('vocab-audio').value.trim() || null
+        const vocabularyId = vocabularyIdInput.value.trim();
+        const body = {
+        word: vocabularyWordInput.value.trim(),
+        pronunciation: vocabularyPronunciationInput.value.trim() || null,
+        partOfSpeech: vocabularyPosInput.value.trim() ? Number(vocabularyPosInput.value.trim()) : null,
+        meaningVi: vocabularyMeaningInput.value.trim() || null,
+        descriptionEn: vocabularyDescriptionInput.value.trim() || null,
+        exampleSentence: vocabularyExampleInput.value.trim() || null,
+        collocations: vocabularyCollocationsInput.value.trim() || null,
+        relatedWords: vocabularyRelatedInput.value.trim() || null,
+        note: vocabularyNoteInput.value.trim() || null,
+        imageUrl: vocabularyImageInput.value.trim() || null,
+        audioUrl: vocabularyAudioInput.value.trim() || null
         };
 
-        const url = vocabId ? `/api/decks/vocabularies/${vocabId}` : `/api/decks/@Model.Deck.Id/vocabularies`;
-        const method = vocabId ? 'PUT' : 'POST';
-        const { response, payload: result } = await window.vocabApp.requestJson(url, {
-        method,
-        body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-        window.vocabApp.toast(result?.message || 'Không thể lưu từ vựng.', 'error');
+        if (!body.word) {
+        alert('Từ vựng là bắt buộc.');
+        vocabularyWordInput.focus();
         return;
         }
 
-        window.vocabApp.toast(result?.message || 'Đã lưu từ vựng.', 'success');
-        window.vocabApp.closeModal('vocab-modal');
-        window.vocabApp.safeReload();
+        const url = vocabularyId
+        ? `/api/decks/vocabularies/${vocabularyId}`
+        : `/api/decks/${@deck.Id}/vocabularies`;
+
+        const method = vocabularyId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+        method: method,
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
         });
+
+        const payload = await response.json().catch(() => null);
+
+        if (!response.ok) {
+        alert(payload?.message || 'Không thể cập nhật từ vựng.');
+        return;
+        }
+
+        closeVocabularyModal();
+        location.reload();
+        });
+
+        function createVocabularyForThisDeck() {
+        openVocabularyModal();
+        }
     </script>
 </body>
 </html>
