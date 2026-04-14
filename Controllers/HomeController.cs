@@ -217,7 +217,7 @@ public class HomeController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> Learning(long? deckId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Learning(long? deckId, bool practice = false, CancellationToken cancellationToken = default)
     {
         var user = await GetCurrentUserAsync(cancellationToken);
         if (user is null)
@@ -225,7 +225,7 @@ public class HomeController : Controller
             return RedirectToAction(nameof(Login));
         }
 
-        var session = await _learningService.GetLearningSessionAsync(user.Id, deckId, cancellationToken);
+        var session = await _learningService.GetLearningSessionAsync(user.Id, deckId, practice, cancellationToken);
         return View("Learning", new LearningPageViewModel
         {
             User = user,

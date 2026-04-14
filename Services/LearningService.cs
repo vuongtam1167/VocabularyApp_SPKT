@@ -18,6 +18,7 @@ public sealed class LearningService
     public async Task<LearningSession> GetLearningSessionAsync(
         long userId,
         long? deckId,
+        bool practiceMode = false,
         CancellationToken cancellationToken = default)
     {
         await using var connection = _connectionFactory.CreateConnection();
@@ -31,7 +32,13 @@ public sealed class LearningService
 
         var dailyTarget = await GetDailyTargetAsync(connection, userId, cancellationToken);
 
-        var queue = await LoadQueueAsync(connection, userId, selectedDeck.Value.Id, Math.Max(dailyTarget + 10, 20), dueOrNewOnly: true, cancellationToken);
+        var queue = await LoadQueueAsync(
+            connection,
+            userId,
+            selectedDeck.Value.Id,
+            Math.Max(dailyTarget + 10, 20),
+            practiceMode,
+            cancellationToken);
 
         var performance = await GetTodayPerformanceAsync(connection, userId, cancellationToken);
         var currentCard = queue.FirstOrDefault();
@@ -180,7 +187,7 @@ public sealed class LearningService
             throw;
         }
 
-        var session = await GetLearningSessionAsync(userId, request.DeckId ?? reviewCard.DeckId, cancellationToken);
+        var session = await GetLearningSessionAsync(userId, request.DeckId ?? reviewCard.DeckId, cancellationToken: cancellationToken);
 
         return new LearningReviewResult(
             schedule,
@@ -241,21 +248,21 @@ public sealed class LearningService
         long userId,
         long deckId,
         int take,
-        bool dueOrNewOnly,
+        bool practiceMode,
         CancellationToken cancellationToken)
     {
         var queue = new List<LearningCard>();
         var command = connection.CreateCommand();
 
-        var additionalFilter = dueOrNewOnly
-            ? """
+        var additionalFilter = practiceMode
+            ? string.Empty
+            : """
               AND (
                       lp.id IS NULL
                    OR lp.next_review_date IS NULL
                    OR lp.next_review_date <= @today
               )
-              """
-            : string.Empty;
+              """;
 
         command.CommandText =
             $"""
@@ -292,6 +299,7 @@ public sealed class LearningService
                     WHEN lp.id IS NULL THEN 1
                     ELSE 2
                 END,
+                CASE WHEN lp.next_review_date IS NULL THEN 1 ELSE 0 END,
                 ISNULL(lp.next_review_date, DATEADD(YEAR, 100, @today)),
                 v.created_at;
             """;
@@ -373,6 +381,8 @@ public sealed class LearningService
 
     private static SrsComputation ComputeSchedule(int currentInterval, double currentEaseFactor, int currentRepetitions, ReviewRating rating)
     {
+        currentInterval = ClampReviewInterval(currentInterval);
+
         var quality = MapQualityScore(rating);
         var repetitions = currentRepetitions;
         int interval;
@@ -398,19 +408,21 @@ public sealed class LearningService
                 interval = rating == ReviewRating.Hard ? 3 : 6;
             else
             {
-                interval = (int)Math.Round(currentInterval * easeFactor);
+                interval = ClampReviewInterval(currentInterval * easeFactor);
 
                 if (rating == ReviewRating.Hard)
-                    interval = Math.Max(2, (int)(interval * 0.8));
+                    interval = Math.Max(2, ClampReviewInterval(interval * 0.8));
                 else if (rating == ReviewRating.Easy)
                 {
-                    interval = (int)(interval * 1.3);
+                    interval = ClampReviewInterval(interval * 1.3);
                     easeFactor += 0.1;
                 }
             }
         }
 
-        var nextReviewDate = DateTime.UtcNow.Date.AddDays(Math.Max(interval, 1));
+        interval = ClampReviewInterval(interval);
+
+        var nextReviewDate = DateTime.UtcNow.Date.AddDays(interval);
         var status = repetitions switch
         {
             >= 3 when interval >= 7 => "mastered",
@@ -552,6 +564,28 @@ public sealed class LearningService
             ReviewRating.Easy => 5,
             _ => 4
         };
+
+    private static int ClampReviewInterval(double interval)
+    {
+        var maxSafeDays = (int)Math.Floor((DateTime.MaxValue.Date - DateTime.UtcNow.Date).TotalDays);
+        if (maxSafeDays < 1)
+        {
+            return 1;
+        }
+
+        var safeInterval = Math.Max(interval, 1d);
+        if (safeInterval > maxSafeDays)
+        {
+            return maxSafeDays;
+        }
+
+        if (safeInterval > int.MaxValue)
+        {
+            return int.MaxValue;
+        }
+
+        return (int)Math.Round(safeInterval);
+    }
 
     private static string GetRatingLabel(ReviewRating rating) =>
         rating switch

@@ -1,5 +1,4 @@
-﻿@using System.Text.Json
-@model Vocab_LearningApp.Models.ViewModels.LearningPageViewModel
+﻿@model Vocab_LearningApp.Models.ViewModels.LearningPageViewModel
 @{
     Layout = null;
     ViewData["Title"] = "Learning Page";
@@ -13,92 +12,96 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
         .flashcard-wrapper {
-        perspective: 1200px;
+            perspective: 1200px;
         }
 
         .flashcard {
-        position: relative;
-        width: 100%;
-        height: 420px;
-        cursor: pointer;
-        transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 420px;
+            cursor: pointer;
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
         }
 
         .flashcard.flipped {
-        transform: rotateY(180deg);
+            transform: rotateY(180deg);
         }
 
         .flashcard-face {
-        position: absolute;
-        inset: 0;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        border-radius: 1.25rem;
-        overflow: hidden;
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 1.25rem;
+            overflow: hidden;
         }
 
         .flashcard-back {
-        transform: rotateY(180deg);
+            transform: rotateY(180deg);
         }
 
         .flashcard-wrapper:hover .flashcard:not(.flipped) {
-        transform: rotateY(4deg) translateY(-4px);
+            transform: rotateY(4deg) translateY(-4px);
         }
+
         .flashcard-wrapper:hover .flashcard.flipped {
-        transform: rotateY(176deg) translateY(-4px);
+            transform: rotateY(176deg) translateY(-4px);
         }
 
         .rating-btn {
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
+
         .rating-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
+
         .rating-btn:active {
-        transform: translateY(0);
+            transform: translateY(0);
         }
 
         @@keyframes shimmer {
-        0%   { background-position: -400px 0; }
-        100% { background-position: 400px 0; }
+            0% { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
         }
+
         .shimmer {
-        background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.1) 75%);
-        background-size: 400px 100%;
-        animation: shimmer 1.4s infinite;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 400px 100%;
+            animation: shimmer 1.4s infinite;
         }
 
         @@keyframes pulse-glow {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
-        50%       { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
         }
-        .pulse-glow { animation: pulse-glow 2s infinite; }
+
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #7c3aed 100%);">
 
-    <!-- Header -->
     <header class="border-b border-white/10" style="background: rgba(255,255,255,0.07); backdrop-filter: blur(12px);">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-4">
                     <a asp-controller="Home" asp-action="Vocab_detail" asp-route-deckId="@Model.Session.DeckId"
-                           class="flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                       class="flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </a>
                     <div>
                         <p class="font-bold text-white text-sm leading-tight" id="deck-title">@Model.Session.DeckTitle</p>
-                        <p class="text-xs text-white/60 mt-0.5" id="session-subtitle">
-                            Đang tải...
-                        </p>
+                        <p class="text-xs text-white/60 mt-0.5" id="session-subtitle">Đang tải...</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -112,58 +115,40 @@
     </header>
 
     <main class="container mx-auto px-4 py-6 max-w-2xl">
-
-        <!-- Progress Bar -->
         <div class="mb-6">
             <div class="flex justify-between items-center mb-2">
                 <span id="progress-text" class="text-white/70 text-sm font-medium">0 / @Model.Session.TotalCards từ</span>
                 <span id="progress-pct" class="text-white text-sm font-bold">0%</span>
             </div>
             <div class="w-full rounded-full h-2.5" style="background: rgba(255,255,255,0.15);">
-                <div id="progress-bar"
-                     class="h-2.5 rounded-full transition-all duration-500"
-                     style="width: 0%; background: linear-gradient(90deg, #a78bfa, #818cf8);"></div>
+                <div id="progress-bar" class="h-2.5 rounded-full transition-all duration-500" style="width: 0%; background: linear-gradient(90deg, #a78bfa, #818cf8);"></div>
             </div>
         </div>
 
-        <!-- Flashcard -->
         <div class="flashcard-wrapper mb-6" id="flashcard-wrapper">
             <div class="flashcard" id="flashcard" onclick="flipCard()">
-
-                <!-- Mặt trước -->
                 <div class="flashcard-face flashcard-front" style="background: #ffffff;">
                     <div class="flex flex-col items-center justify-center h-full px-10 py-8 text-center" id="flashcard-front">
-                        <!-- nội dung được render bằng JS -->
                         <div class="shimmer w-48 h-12 rounded-xl mb-4"></div>
                         <div class="shimmer w-32 h-5 rounded-lg mb-2"></div>
                         <div class="shimmer w-24 h-4 rounded-lg mt-6"></div>
                     </div>
                 </div>
 
-                <!-- Mặt sau -->
-                <div class="flashcard-face flashcard-back"
-                     style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
-                    <div class="flex flex-col h-full px-8 py-6 text-white overflow-y-auto" id="flashcard-back">
-                        <!-- nội dung được render bằng JS -->
-                    </div>
+                <div class="flashcard-face flashcard-back" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                    <div class="flex flex-col h-full px-8 py-6 text-white overflow-y-auto" id="flashcard-back"></div>
                 </div>
-
             </div>
         </div>
 
-        <!-- Hint text (ẩn sau khi flip) -->
         <p id="hint-text" class="text-center text-white/50 text-sm mb-5 transition-opacity duration-300">
             💡 Nhấn thẻ hoặc nhấn <kbd class="bg-white/20 px-1.5 py-0.5 rounded text-xs">Space</kbd> để lật
         </p>
 
-        <!-- Rating Buttons -->
         <div id="rating-buttons" class="mb-8"></div>
 
-        <!-- Thống kê buổi học -->
         <div class="rounded-2xl p-5 border border-white/10" style="background: rgba(255,255,255,0.07); backdrop-filter: blur(8px);">
-            <h3 class="text-white font-semibold mb-4 text-center text-sm tracking-wide uppercase opacity-80">
-                📊 Thống kê buổi học
-            </h3>
+            <h3 class="text-white font-semibold mb-4 text-center text-sm tracking-wide uppercase opacity-80">📊 Thống kê buổi học</h3>
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="rounded-xl p-3" style="background: rgba(255,255,255,0.1);">
                     <p id="studied-count" class="text-3xl font-extrabold text-white">@Model.Session.CompletedCards</p>
@@ -179,243 +164,414 @@
                 </div>
             </div>
         </div>
-
     </main>
 
     <script>
+        const sessionDeckId = new URLSearchParams(window.location.search).get('deckId');
+        const practiceMode = ['1', 'true', 'yes'].includes((new URLSearchParams(window.location.search).get('practice') ?? '').toLowerCase());
+        const learningUrlBase = '@Url.Action("Learning", "Home")';
+        const deckDetailUrl = '@Url.Action("Vocab_detail", "Home", new { deckId = Model.Session.DeckId })';
+        const dashboardUrl = '@Url.Action("Dashboard", "Home")';
+
         let isFlipped = false;
         let session = null;
         let sessionEnded = false;
 
-        /* ── helpers ─────────────────────────────────── */
         function esc(text) {
-        const d = document.createElement('div');
-        d.innerText = text ?? '';
-        return d.innerHTML;
-        }
-
-        function getCurrentCard() {
-        return session?.CurrentCard ?? session?.currentCard ?? null;
-        }
-
-        function getReviewPreviews() {
-        return session?.ReviewPreviews ?? session?.reviewPreviews ?? [];
+            const d = document.createElement('div');
+            d.innerText = text ?? '';
+            return d.innerHTML;
         }
 
         function get(obj, ...keys) {
-        for (const k of keys) {
-        if (obj?.[k] !== undefined) return obj[k];
-        }
-        return null;
+            for (const k of keys) {
+                if (obj?.[k] !== undefined) return obj[k];
+            }
+            return null;
         }
 
-        /* ── flip ─────────────────────────────────────── */
+        function getCurrentCard() {
+            return session?.CurrentCard ?? session?.currentCard ?? null;
+        }
+
+        function getQueue() {
+            return session?.Queue ?? session?.queue ?? [];
+        }
+
+        function getReviewPreviews() {
+            return session?.ReviewPreviews ?? session?.reviewPreviews ?? [];
+        }
+
+        function getVocabularyId(card) {
+            return card?.VocabularyId ?? card?.vocabularyId ?? null;
+        }
+
+        function setQueue(queue) {
+            session.Queue = queue;
+            session.queue = queue;
+        }
+
+        function setCurrentCard(card) {
+            session.CurrentCard = card;
+            session.currentCard = card;
+        }
+
+        function setReviewPreviews(previews) {
+            session.ReviewPreviews = previews;
+            session.reviewPreviews = previews;
+        }
+
+        function buildLearningUrl(practice) {
+            const params = new URLSearchParams();
+            if (sessionDeckId) {
+                params.set('deckId', sessionDeckId);
+            }
+            if (practice) {
+                params.set('practice', 'true');
+            }
+            const query = params.toString();
+            return query ? `${learningUrlBase}?${query}` : learningUrlBase;
+        }
+
+        function mapQualityScore(rating) {
+            switch (Number(rating)) {
+                case 0: return 0;
+                case 1: return 3;
+                case 2: return 4;
+                case 3: return 5;
+                default: return 4;
+            }
+        }
+
+        function computeSchedule(currentInterval, currentEaseFactor, currentRepetitions, rating) {
+            const quality = mapQualityScore(rating);
+            let repetitions = Number(currentRepetitions ?? 0);
+            let interval = 1;
+            let easeFactor = Number(currentEaseFactor ?? 2.5);
+
+            if (quality < 3) {
+                repetitions = 0;
+                interval = 1;
+                easeFactor = Math.max(1.3, easeFactor - 0.2);
+            } else {
+                easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+                repetitions += 1;
+
+                if (repetitions === 1) {
+                    interval = 1;
+                } else if (repetitions === 2) {
+                    interval = Number(rating) === 1 ? 3 : 6;
+                } else {
+                    interval = Math.round(Number(currentInterval ?? 0) * easeFactor);
+
+                    if (Number(rating) === 1) {
+                        interval = Math.max(2, Math.floor(interval * 0.8));
+                    } else if (Number(rating) === 3) {
+                        interval = Math.floor(interval * 1.3);
+                        easeFactor += 0.1;
+                    }
+                }
+            }
+
+            const nextReviewDate = new Date();
+            nextReviewDate.setDate(nextReviewDate.getDate() + Math.max(interval, 1));
+
+            return {
+                interval,
+                easeFactor: Number(easeFactor.toFixed(2)),
+                repetitions,
+                nextReviewDate
+            };
+        }
+
+        function formatScheduleText(nextReviewDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const next = new Date(nextReviewDate);
+            next.setHours(0, 0, 0, 0);
+
+            const days = Math.max(Math.round((next - today) / 86400000), 1);
+            return days === 1 ? '1 ngày' : `${days} ngày`;
+        }
+
+        function buildReviewPreviews(card) {
+            const labels = {
+                0: { label: 'Quên', emoji: '😞' },
+                1: { label: 'Khó', emoji: '😐' },
+                2: { label: 'Tốt', emoji: '😊' },
+                3: { label: 'Dễ', emoji: '😄' }
+            };
+
+            return [0, 1, 2, 3].map(rating => {
+                const simulated = computeSchedule(card.Interval ?? card.interval ?? 0, card.EaseFactor ?? card.easeFactor ?? 2.5, card.Repetitions ?? card.repetitions ?? 0, rating);
+                const meta = labels[rating];
+                return {
+                    Rating: rating,
+                    Label: meta.label,
+                    Emoji: meta.emoji,
+                    ScheduleText: formatScheduleText(simulated.nextReviewDate)
+                };
+            });
+        }
+
         function flipCard() {
-        if (!getCurrentCard()) return;
-        isFlipped = !isFlipped;
-        document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
-        document.getElementById('hint-text').style.opacity = isFlipped ? '0' : '1';
+            if (!getCurrentCard()) return;
+            isFlipped = !isFlipped;
+            document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+            document.getElementById('hint-text').style.opacity = isFlipped ? '0' : '1';
         }
 
-        /* ── render ───────────────────────────────────── */
+        function renderCompletionState(totalCards, completed, correct, accuracy) {
+            const front = document.getElementById('flashcard-front');
+            const back = document.getElementById('flashcard-back');
+            const ratingBtns = document.getElementById('rating-buttons');
+            const hintText = document.getElementById('hint-text');
+            const flashcard = document.getElementById('flashcard');
+
+            sessionEnded = true;
+            flashcard.style.cursor = 'default';
+            hintText.style.display = 'none';
+
+            const title = practiceMode ? 'Lượt luyện tập đã hoàn thành!' : 'Hoàn thành!';
+            const description = practiceMode
+                ? 'Bạn đã đi hết một vòng luyện tập của bộ từ này. Có thể làm lại ngay hoặc quay về bộ từ.'
+                : 'Bạn đã học xong lượt hiện tại của bộ từ này. Có thể quay về bộ từ hoặc dashboard.';
+
+            const html = `
+                <div class="flex flex-col items-center justify-center h-full text-center gap-4 px-4">
+                    <div class="text-6xl mb-2">🎉</div>
+                    <h2 class="text-3xl font-extrabold text-gray-900">${title}</h2>
+                    <p class="text-gray-500 text-sm max-w-sm">${description}</p>
+                    <div class="grid grid-cols-3 gap-3 w-full max-w-md mt-2">
+                        <div class="rounded-xl p-3 bg-gray-100">
+                            <p class="text-2xl font-extrabold text-gray-900">${completed}</p>
+                            <p class="text-gray-500 text-xs mt-1">Đã học</p>
+                        </div>
+                        <div class="rounded-xl p-3 bg-gray-100">
+                            <p class="text-2xl font-extrabold text-gray-900">${correct}</p>
+                            <p class="text-gray-500 text-xs mt-1">Đúng</p>
+                        </div>
+                        <div class="rounded-xl p-3 bg-gray-100">
+                            <p class="text-2xl font-extrabold text-gray-900">${accuracy}%</p>
+                            <p class="text-gray-500 text-xs mt-1">Chính xác</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-4 flex-wrap justify-center">
+                        <button type="button" onclick="restartRound()" class="pulse-glow bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors text-sm">
+                            Học lại bộ này
+                        </button>
+                        <a href="${deckDetailUrl}" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors text-sm">
+                            Quay về bộ từ
+                        </a>
+                        <a href="${dashboardUrl}" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors text-sm">
+                            Dashboard
+                        </a>
+                    </div>
+                </div>`;
+
+            front.innerHTML = html;
+            back.innerHTML = html;
+            ratingBtns.innerHTML = '';
+        }
+
         function renderSession() {
-        if (!session) return;
+            if (!session) return;
 
-        const card         = getCurrentCard();
-        const queue        = session?.Queue ?? session?.queue ?? [];
-        const totalCards   = get(session, 'TotalCards', 'totalCards') ?? queue.length;
-        const completed    = get(session, 'CompletedCards', 'completedCards') ?? 0;
-        const correct      = get(session, 'CorrectAnswers', 'correctAnswers') ?? 0;
-        const accuracy     = get(session, 'AccuracyPercentage', 'accuracyPercentage') ?? 0;
-        const remaining    = card ? (queue.length) : 0;
-        const progressNum  = totalCards - remaining;
-        const progressPct  = totalCards === 0 ? 100 : Math.min(100, Math.round(progressNum / totalCards * 100));
+            const card = getCurrentCard();
+            const queue = getQueue();
+            const totalCards = get(session, 'TotalCards', 'totalCards') ?? queue.length;
+            const completed = get(session, 'CompletedCards', 'completedCards') ?? 0;
+            const correct = get(session, 'CorrectAnswers', 'correctAnswers') ?? 0;
+            const accuracy = get(session, 'AccuracyPercentage', 'accuracyPercentage') ?? 0;
+            const remaining = card ? queue.length : 0;
+            const progressNum = totalCards - remaining;
+            const progressPct = totalCards === 0 ? 100 : Math.min(100, Math.round((progressNum / totalCards) * 100));
 
-        // cập nhật header & stats
-        document.getElementById('deck-title').textContent     = get(session, 'DeckTitle', 'deckTitle') ?? 'Buổi học';
-        document.getElementById('session-subtitle').textContent = card
-        ? `Đang học: ${progressNum + 1}/${totalCards} từ`
-        : `Hoàn thành ${totalCards} từ`;
-        document.getElementById('progress-text').textContent  = `${progressNum}/${totalCards} từ`;
-        document.getElementById('progress-pct').textContent   = `${progressPct}%`;
-        document.getElementById('progress-bar').style.width   = `${progressPct}%`;
-        document.getElementById('studied-count').textContent  = completed;
-        document.getElementById('correct-count').textContent  = correct;
-        document.getElementById('accuracy-count').textContent = `${accuracy}%`;
+            document.getElementById('deck-title').textContent = get(session, 'DeckTitle', 'deckTitle') ?? 'Buổi học';
+            document.getElementById('session-subtitle').textContent = card
+                ? `Đang học: ${progressNum + 1}/${totalCards} từ`
+                : `Hoàn thành ${totalCards} từ`;
+            document.getElementById('progress-text').textContent = `${progressNum}/${totalCards} từ`;
+            document.getElementById('progress-pct').textContent = `${progressPct}%`;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+            document.getElementById('studied-count').textContent = completed;
+            document.getElementById('correct-count').textContent = correct;
+            document.getElementById('accuracy-count').textContent = `${accuracy}%`;
 
-        const front        = document.getElementById('flashcard-front');
-        const back         = document.getElementById('flashcard-back');
-        const ratingBtns   = document.getElementById('rating-buttons');
-        const hintText     = document.getElementById('hint-text');
-        const wrapper      = document.getElementById('flashcard-wrapper');
+            const front = document.getElementById('flashcard-front');
+            const back = document.getElementById('flashcard-back');
+            const ratingBtns = document.getElementById('rating-buttons');
+            const hintText = document.getElementById('hint-text');
+            const flashcard = document.getElementById('flashcard');
 
-        /* ── TRƯỜNG HỢP KẾT THÚC ───────────────── */
-        if (!card) {
-        sessionEnded = true;
+            if (!card) {
+                renderCompletionState(totalCards, completed, correct, accuracy);
+                return;
+            }
 
-        // Ẩn con trỏ click trên thẻ
-        document.getElementById('flashcard').style.cursor = 'default';
-        hintText.style.display = 'none';
+            sessionEnded = false;
+            flashcard.style.cursor = 'pointer';
+            hintText.style.display = 'block';
 
-        front.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full text-center gap-4 px-4">
-        <div class="text-6xl mb-2">🎉</div>
-        <h2 class="text-3xl font-extrabold text-gray-900">Hoàn thành!</h2>
-        <p class="text-gray-500 text-sm">Bạn đã học xong tất cả từ trong buổi hôm nay.</p>
-        <div class="flex gap-3 mt-4 flex-wrap justify-center">
-        <a href="/Home/Vocabulary"
-        class="pulse-glow bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors text-sm">
-        Quay về bộ từ
-        </a>
-        <a href="/Home/Dashboard"
-        class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors text-sm">
-        Dashboard
-        </a>
-        </div>
-        </div>`;
-        back.innerHTML  = front.innerHTML;
-        ratingBtns.innerHTML = '';
-        return;
+            const word = esc(card.Word ?? card.word ?? '');
+            const pron = esc(card.Pronunciation ?? card.pronunciation ?? '');
+            const meaning = esc(card.MeaningVi ?? card.meaningVi ?? 'Chưa cập nhật');
+            const example = esc(card.ExampleSentence ?? card.exampleSentence ?? 'Chưa có ví dụ');
+            const colloc = esc(card.Collocations ?? card.collocations ?? 'Chưa cập nhật');
+            const related = esc(card.RelatedWords ?? card.relatedWords ?? 'Chưa cập nhật');
+
+            front.innerHTML = `
+                <div class="flex flex-col items-center justify-center gap-3">
+                    <div class="inline-flex items-center gap-2 mb-1">
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full" style="background:#ede9fe; color:#6d28d9;">
+                            ${esc(card.Status ?? card.status ?? 'Chưa học')}
+                        </span>
+                    </div>
+                    <h2 class="text-5xl font-extrabold text-gray-900 tracking-tight">${word}</h2>
+                    ${pron ? `<p class="text-lg text-gray-400 font-medium">/${pron}/</p>` : ''}
+                    <p class="text-gray-300 text-sm mt-6">Nhấn để xem nghĩa →</p>
+                </div>`;
+
+            back.innerHTML = `
+                <div class="flex flex-col gap-3 h-full">
+                    <h3 class="text-2xl font-extrabold text-white/95 border-b border-white/20 pb-3">${word}</h3>
+                    <div class="flex-1 space-y-3 overflow-y-auto pr-1">
+                        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.12)">
+                            <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Nghĩa</p>
+                            <p class="text-white font-semibold">${meaning}</p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+                            <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Ví dụ</p>
+                            <p class="text-white/90 italic text-sm">${example}</p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+                            <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Collocation</p>
+                            <p class="text-white/90 text-sm">${colloc}</p>
+                        </div>
+                        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
+                            <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Từ liên quan</p>
+                            <p class="text-white/90 text-sm">${related}</p>
+                        </div>
+                    </div>
+                    <p class="text-white/30 text-xs text-center pt-1">← Nhấn để quay lại</p>
+                </div>`;
+
+            const previews = buildReviewPreviews(card);
+            setReviewPreviews(previews);
+
+            const btnColors = {
+                'quên': 'from-rose-500 to-red-600',
+                'khó': 'from-orange-400 to-amber-500',
+                'tốt': 'from-sky-500 to-blue-600',
+                'dễ': 'from-emerald-500 to-green-600'
+            };
+
+            ratingBtns.innerHTML = `
+                <p class="text-white/60 text-xs text-center uppercase tracking-widest mb-3">Bạn nhớ từ này thế nào?</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    ${previews.map(p => {
+                        const label = esc(p.Label ?? p.label ?? '');
+                        const emoji = esc(p.Emoji ?? p.emoji ?? '');
+                        const sched = esc(p.ScheduleText ?? p.scheduleText ?? '');
+                        const rating = p.Rating ?? p.rating;
+                        const gradient = btnColors[label.toLowerCase()] ?? 'from-slate-500 to-slate-600';
+                        return `
+                            <button type="button" onclick="submitReview(${rating})" class="rating-btn bg-gradient-to-br ${gradient} text-white rounded-2xl py-4 px-3 flex flex-col items-center gap-1 shadow-lg">
+                                <span class="text-2xl">${emoji}</span>
+                                <span class="font-bold text-sm">${label}</span>
+                                <span class="text-white/70 text-xs">${sched}</span>
+                            </button>`;
+                    }).join('')}
+                </div>`;
         }
 
-        /* ── MẶT TRƯỚC ─────────────────────────── */
-        const word  = esc(card.Word  ?? card.word  ?? '');
-        const pron  = esc(card.Pronunciation ?? card.pronunciation ?? '');
-
-        front.innerHTML = `
-        <div class="flex flex-col items-center justify-center gap-3">
-        <div class="inline-flex items-center gap-2 mb-1">
-        <span class="text-xs font-semibold px-3 py-1 rounded-full"
-        style="background:#ede9fe; color:#6d28d9;">
-        ${esc(card.Status ?? card.status ?? 'Chưa học')}
-        </span>
-        </div>
-        <h2 class="text-5xl font-extrabold text-gray-900 tracking-tight">${word}</h2>
-        ${pron ? `<p class="text-lg text-gray-400 font-medium">/${pron}/</p>` : ''}
-        <p class="text-gray-300 text-sm mt-6">Nhấn để xem nghĩa →</p>
-        </div>`;
-
-        /* ── MẶT SAU ────────────────────────────── */
-        const meaning  = esc(card.MeaningVi       ?? card.meaningVi       ?? 'Chưa cập nhật');
-        const example  = esc(card.ExampleSentence ?? card.exampleSentence ?? 'Chưa có ví dụ');
-        const colloc   = esc(card.Collocations     ?? card.collocations     ?? 'Chưa cập nhật');
-        const related  = esc(card.RelatedWords     ?? card.relatedWords     ?? 'Chưa cập nhật');
-
-        back.innerHTML = `
-        <div class="flex flex-col gap-3 h-full">
-        <h3 class="text-2xl font-extrabold text-white/95 border-b border-white/20 pb-3">${word}</h3>
-        <div class="flex-1 space-y-3 overflow-y-auto pr-1">
-        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.12)">
-        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Nghĩa</p>
-        <p class="text-white font-semibold">${meaning}</p>
-        </div>
-        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
-        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Ví dụ</p>
-        <p class="text-white/90 italic text-sm">${example}</p>
-        </div>
-        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
-        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Collocation</p>
-        <p class="text-white/90 text-sm">${colloc}</p>
-        </div>
-        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.08)">
-        <p class="text-white/50 text-xs uppercase tracking-wider mb-1">Từ liên quan</p>
-        <p class="text-white/90 text-sm">${related}</p>
-        </div>
-        </div>
-        <p class="text-white/30 text-xs text-center pt-1">← Nhấn để quay lại</p>
-        </div>`;
-
-        /* ── NÚT ĐÁNH GIÁ ───────────────────────── */
-        const previews = getReviewPreviews();
-        if (previews.length > 0) {
-        const btnColors = {
-        'quên': 'from-rose-500 to-red-600',
-        'khó':  'from-orange-400 to-amber-500',
-        'tốt':  'from-sky-500 to-blue-600',
-        'dễ':   'from-emerald-500 to-green-600',
-        };
-        ratingBtns.innerHTML = `
-        <p class="text-white/60 text-xs text-center uppercase tracking-widest mb-3">Bạn nhớ từ này thế nào?</p>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        ${previews.map(p => {
-        const label = esc(p.Label ?? p.label ?? '');
-        const emoji = esc(p.Emoji ?? p.emoji ?? '');
-        const sched = esc(p.ScheduleText ?? p.scheduleText ?? '');
-        const rating = p.Rating ?? p.rating;
-        const colorKey = label.toLowerCase();
-        const gradient = btnColors[colorKey] ?? 'from-slate-500 to-slate-600';
-        return `
-        <button type="button"
-        onclick="submitReview(${rating})"
-        class="rating-btn bg-gradient-to-br ${gradient} text-white rounded-2xl py-4 px-3 flex flex-col items-center gap-1 shadow-lg">
-        <span class="text-2xl">${emoji}</span>
-        <span class="font-bold text-sm">${label}</span>
-        <span class="text-white/70 text-xs">${sched}</span>
-        </button>`;
-        }).join('')}
-        </div>`;
-        } else {
-        ratingBtns.innerHTML = '';
-        }
-        }
-
-        /* ── load session ─────────────────────────── */
         async function loadSession() {
-        const deckId = new URLSearchParams(window.location.search).get('deckId');
-        try {
-        const res = await fetch(`/api/learning/session?deckId=${deckId ?? ''}`);
-        if (!res.ok) throw new Error('API error');
-        session = await res.json();
-        renderSession();
-        } catch {
-        document.getElementById('flashcard-front').innerHTML =
-        `<p class="text-red-500 font-semibold">Không thể tải phiên học. Vui lòng thử lại.</p>`;
-        }
+            try {
+                const params = new URLSearchParams();
+                if (sessionDeckId) {
+                    params.set('deckId', sessionDeckId);
+                }
+                if (practiceMode) {
+                    params.set('practice', 'true');
+                }
+
+                const query = params.toString();
+                const res = await fetch(`/api/learning/session${query ? `?${query}` : ''}`);
+                if (!res.ok) throw new Error('API error');
+
+                session = await res.json();
+                sessionEnded = false;
+                isFlipped = false;
+                document.getElementById('flashcard').classList.remove('flipped');
+                document.getElementById('hint-text').style.opacity = '1';
+                document.getElementById('hint-text').style.display = 'block';
+                renderSession();
+            } catch {
+                document.getElementById('flashcard-front').innerHTML = '<p class="text-red-500 font-semibold">Không thể tải phiên học. Vui lòng thử lại.</p>';
+            }
         }
 
-        /* ── submit review ────────────────────────── */
         async function submitReview(rating) {
-        // ✅ FIX: Nếu phiên đã kết thúc, không làm gì thêm
-        if (sessionEnded) return;
+            if (sessionEnded) return;
 
-        const card = getCurrentCard();
-        if (!card) return;
+            const card = getCurrentCard();
+            if (!card) return;
 
-        try {
-        const res = await fetch('/api/learning/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        vocabularyId: card.VocabularyId ?? card.vocabularyId,
-        rating,
-        deckId: session?.DeckId ?? session?.deckId
-        })
-        });
+            const cardId = getVocabularyId(card);
+            if (cardId == null) return;
 
-        if (!res.ok) throw new Error('Review API error');
+            try {
+                const res = await fetch('/api/learning/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vocabularyId: cardId,
+                        rating,
+                        deckId: session?.DeckId ?? session?.deckId
+                    })
+                });
 
-        const result = await res.json();
-        session = result.Session ?? result.session;
+                if (!res.ok) throw new Error('Review API error');
 
-        // Reset về mặt trước
-        isFlipped = false;
-        document.getElementById('flashcard').classList.remove('flipped');
-        document.getElementById('hint-text').style.opacity = '1';
+                const currentQueue = getQueue().filter(item => getVocabularyId(item) !== cardId);
+                setQueue(currentQueue);
+                setCurrentCard(currentQueue[0] ?? null);
 
-        renderSession();
-        } catch {
-        alert('Không thể ghi nhận kết quả học. Vui lòng thử lại.');
+                const completed = Number(get(session, 'CompletedCards', 'completedCards') ?? 0) + 1;
+                const correct = Number(get(session, 'CorrectAnswers', 'correctAnswers') ?? 0) + (Number(rating) !== 0 ? 1 : 0);
+                session.CompletedCards = completed;
+                session.completedCards = completed;
+                session.CorrectAnswers = correct;
+                session.correctAnswers = correct;
+
+                const nextCard = getCurrentCard();
+                setReviewPreviews(nextCard ? buildReviewPreviews(nextCard) : []);
+
+                isFlipped = false;
+                document.getElementById('flashcard').classList.remove('flipped');
+                document.getElementById('hint-text').style.opacity = '1';
+
+                renderSession();
+            } catch {
+                alert('Không thể ghi nhận kết quả học. Vui lòng thử lại.');
+            }
         }
+
+        function restartRound() {
+            window.location.href = buildLearningUrl(true);
         }
 
-        /* ── keyboard ─────────────────────────────── */
         document.addEventListener('keydown', function (e) {
-        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
-        // Phím số 1-4 để đánh giá nhanh
-        const ratingMap = { '1': 0, '2': 1, '3': 2, '4': 3 };
-        if (isFlipped && ratingMap[e.key] !== undefined) {
-        submitReview(ratingMap[e.key]);
-        }
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipCard();
+            }
+
+            const ratingMap = { '1': 0, '2': 1, '3': 2, '4': 3 };
+            if (isFlipped && ratingMap[e.key] !== undefined) {
+                submitReview(ratingMap[e.key]);
+            }
         });
 
         loadSession();

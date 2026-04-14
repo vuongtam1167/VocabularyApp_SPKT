@@ -428,8 +428,8 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_2\obj\Debug\net10.0\Vocab_L
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_2\obj\Debug\net10.0\ref\Vocab_LearningApp.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\appsettings.Development.json
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\appsettings.json
-D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.staticwebassets.endpoints.json
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.staticwebassets.runtime.json
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.staticwebassets.endpoints.json
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.exe
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.deps.json
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Vocab_LearningApp.runtimeconfig.json
@@ -443,6 +443,9 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\ClosedX
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\DocumentFormat.OpenXml.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\DocumentFormat.OpenXml.Framework.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\ExcelNumberFormat.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Google.Apis.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Google.Apis.Auth.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Google.Apis.Core.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
@@ -455,12 +458,15 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microso
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\Newtonsoft.Json.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\RBush.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\SixLabors.Fonts.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.ClientModel.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.CodeDom.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.IO.Packaging.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.Management.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.Memory.Data.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.Runtime.Caching.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
@@ -480,6 +486,7 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtime
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtimes\win\lib\net7.0\System.Management.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\bin\Debug\net10.0\runtimes\win\lib\net8.0\System.Runtime.Caching.dll
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\Vocab_LearningApp.csproj.AssemblyReference.cache
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\rpswa.dswa.cache.json
@@ -569,4 +576,3 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\refint\
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\Vocab_LearningApp.pdb
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\Vocab_LearningApp.genruntimeconfig.cache
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\ref\Vocab_LearningApp.dll
-D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

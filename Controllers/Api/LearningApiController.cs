@@ -15,9 +15,9 @@ public sealed class LearningApiController : ApiControllerBase
     }
 
     [HttpGet("session")]
-    public async Task<IActionResult> GetSession([FromQuery] long? deckId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSession([FromQuery] long? deckId, [FromQuery] bool practice = false, CancellationToken cancellationToken = default)
     {
-        var session = await _learningService.GetLearningSessionAsync(CurrentUserId, deckId, cancellationToken);
+        var session = await _learningService.GetLearningSessionAsync(CurrentUserId, deckId, practice, cancellationToken);
         return Ok(session);
     }
 

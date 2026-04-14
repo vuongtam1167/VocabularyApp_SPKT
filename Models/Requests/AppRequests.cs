@@ -47,28 +47,7 @@ public sealed class RegisterInputModel
 public sealed class GoogleLoginRequest
 {
     [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
-
-    [Required]
-    [MaxLength(255)]
-    public string FullName { get; set; } = string.Empty;
-
-    [Required]
-    [MaxLength(255)]
-    public string GoogleSub { get; set; } = string.Empty;
-
-    [MaxLength(255)]
-    public string? AvatarUrl { get; set; }
-
-    [MaxLength(50)]
-    public string? LearningGoal { get; set; }
-
-    [MaxLength(10)]
-    public string? CurrentLevel { get; set; }
-
-    [Range(1, 200)]
-    public int? DailyTarget { get; set; }
+    public string Credential { get; set; } = string.Empty;
 }
 
 public class CreateDeckRequest

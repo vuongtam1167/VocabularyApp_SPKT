@@ -1,9 +1,16 @@
 ﻿@model Vocab_LearningApp.Models.ViewModels.LoginPageViewModel
+@using System.Text.Json
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Đăng nhập";
     Layout = null;
+    var googleClientId = Configuration["Google:ClientId"] ?? string.Empty;
+    var googleClientIdJson = JsonSerializer.Serialize(googleClientId);
+    var googleLoginUrlJson = JsonSerializer.Serialize(Url.Content("~/api/auth/google"));
+    var dashboardUrlJson = JsonSerializer.Serialize(Url.Action("Dashboard", "Home") ?? "/Home/Dashboard");
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -77,6 +84,10 @@
                         <span class="text-xs text-gray-400">Phiên làm việc qua cookie bảo mật</span>
                     </div>
                     <button type="submit" class="w-full rounded-2xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700">Đăng nhập</button>
+                    <div class="mt-5 space-y-3">
+                        <div id="google-signin-button" class="min-h-[48px]"></div>
+                        <p id="google-signin-note" class="text-sm text-gray-500"></p>
+                    </div>
                 </form>
 
                 <div class="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
@@ -166,6 +177,78 @@
 
         const initialTab = '@Model.ActiveTab';
         showTab(initialTab === 'register' ? 'register' : 'login');
+    </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        const googleClientId = @Html.Raw(googleClientIdJson);
+        const googleLoginUrl = @Html.Raw(googleLoginUrlJson);
+        const dashboardUrl = @Html.Raw(dashboardUrlJson);
+
+        function setGoogleNote(message, isError) {
+        const note = document.getElementById('google-signin-note');
+        if (!note) return;
+
+        note.textContent = message || '';
+        note.className = isError ? 'text-sm text-red-600' : 'text-sm text-gray-500';
+        }
+
+        async function handleGoogleCredentialResponse(response) {
+        setGoogleNote('Đang xác thực tài khoản Google...', false);
+
+        try {
+        const result = await fetch(googleLoginUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ credential: response.credential })
+        });
+
+        const payload = await result.json().catch(() => ({}));
+
+        if (!result.ok) {
+        throw new Error(payload.message || 'Đăng nhập Google không thành công.');
+        }
+
+        window.location.href = dashboardUrl;
+        } catch (error) {
+        setGoogleNote(error?.message || 'Đăng nhập Google không thành công.', true);
+        }
+        }
+
+        function initializeGoogleSignIn() {
+        const container = document.getElementById('google-signin-button');
+        if (!container) return;
+
+        if (!googleClientId) {
+        container.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500">Cần cấu hình Google:ClientId trong appsettings.json.</div>';
+        setGoogleNote('Nút Google chưa khả dụng vì thiếu Client ID.', true);
+        return;
+        }
+
+        if (!window.google || !google.accounts || !google.accounts.id) {
+        setGoogleNote('Đang tải Google Sign-In...', false);
+        return;
+        }
+
+        google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true
+        });
+
+        google.accounts.id.renderButton(container, {
+        theme: 'outline',
+        size: 'large',
+        width: "100%",
+        text: 'signin_with',
+        shape: 'rectangular'
+        });
+
+        setGoogleNote('Đăng nhập nhanh bằng tài khoản Google.', false);
+        }
+
+        window.addEventListener('load', initializeGoogleSignIn);
     </script>
 </body>
 </html>

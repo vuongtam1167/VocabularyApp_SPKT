@@ -3,6 +3,8 @@ using Vocab_LearningApp.Data;
 using Vocab_LearningApp.Extensions;
 using Vocab_LearningApp.Models.Domain;
 using Vocab_LearningApp.Models.Requests;
+using Google.Apis.Auth;
+using Microsoft.Extensions.Configuration;
 
 namespace Vocab_LearningApp.Services;
 
@@ -13,15 +15,18 @@ public sealed class AuthService
     private readonly ISqlConnectionFactory _connectionFactory;
     private readonly PasswordHashingService _passwordHashingService;
     private readonly JwtTokenService _jwtTokenService;
+    private readonly string _googleClientId;
 
     public AuthService(
         ISqlConnectionFactory connectionFactory,
         PasswordHashingService passwordHashingService,
-        JwtTokenService jwtTokenService)
+        JwtTokenService jwtTokenService,
+        IConfiguration configuration)
     {
         _connectionFactory = connectionFactory;
         _passwordHashingService = passwordHashingService;
         _jwtTokenService = jwtTokenService;
+        _googleClientId = configuration["Google:ClientId"]?.Trim() ?? string.Empty;
     }
 
     public async Task<AuthResult> LoginAsync(LoginInputModel request, CancellationToken cancellationToken = default)
@@ -153,13 +158,41 @@ public sealed class AuthService
 
     public async Task<AuthResult> GoogleLoginAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default)
     {
-        var email = NormalizeRequired(request.Email);
-        var fullName = NormalizeRequired(request.FullName);
-        var googleSub = NormalizeRequired(request.GoogleSub);
+        var credential = NormalizeRequired(request.Credential);
+        if (credential is null)
+        {
+            return AuthResult.Failure("Thông tin đăng nhập Google không hợp lệ.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_googleClientId))
+        {
+            return AuthResult.Failure("Chưa cấu hình Google Client ID.");
+        }
+
+        GoogleJsonWebSignature.Payload payload;
+
+        try
+        {
+            payload = await GoogleJsonWebSignature.ValidateAsync(
+                credential,
+                new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { _googleClientId }
+                });
+        }
+        catch (InvalidJwtException)
+        {
+            return AuthResult.Failure("Google token không hợp lệ hoặc đã hết hạn.");
+        }
+
+        var email = NormalizeRequired(payload.Email);
+        var fullName = NormalizeNullable(payload.Name) ?? email;
+        var googleSub = NormalizeRequired(payload.Subject);
+        var avatarUrl = NormalizeNullable(payload.Picture);
 
         if (email is null || fullName is null || googleSub is null)
         {
-            return AuthResult.Failure("Thông tin đăng nhập Google không hợp lệ.");
+            return AuthResult.Failure("Google token thiếu thông tin cần thiết.");
         }
 
         await using var connection = _connectionFactory.CreateConnection();
@@ -176,10 +209,10 @@ public sealed class AuthService
         }
 
         if (existingByEmail is not null
-            && existingByGoogleSub is null
-            && !string.Equals(existingByEmail.AuthProvider, "google", StringComparison.OrdinalIgnoreCase))
+            && !string.IsNullOrWhiteSpace(existingByEmail.GoogleSub)
+            && !string.Equals(existingByEmail.GoogleSub, googleSub, StringComparison.Ordinal))
         {
-            return AuthResult.Failure("Email này đang được dùng cho tài khoản mật khẩu, không thể đăng nhập Google trực tiếp.");
+            return AuthResult.Failure("Email này đã được liên kết với một tài khoản Google khác.");
         }
 
         var targetRecord = existingByGoogleSub ?? existingByEmail;
@@ -194,44 +227,42 @@ public sealed class AuthService
                 createCommand.Transaction = (SqlTransaction)transaction;
                 createCommand.CommandText =
                     """
-                    INSERT INTO dbo.Users
-                    (
-                        full_name,
-                        email,
-                        password_hash,
-                        auth_provider,
-                        google_sub,
-                        avatar_url,
-                        learning_goal,
-                        current_level,
-                        daily_target,
-                        created_at,
-                        updated_at
-                    )
-                    OUTPUT INSERTED.id
-                    VALUES
-                    (
-                        @fullName,
-                        @email,
-                        NULL,
-                        N'google',
-                        @googleSub,
-                        @avatarUrl,
-                        @learningGoal,
-                        @currentLevel,
-                        @dailyTarget,
-                        SYSDATETIME(),
-                        SYSDATETIME()
-                    );
-                    """;
+                INSERT INTO dbo.Users
+                (
+                    full_name,
+                    email,
+                    password_hash,
+                    auth_provider,
+                    google_sub,
+                    avatar_url,
+                    learning_goal,
+                    current_level,
+                    daily_target,
+                    created_at,
+                    updated_at
+                )
+                OUTPUT INSERTED.id
+                VALUES
+                (
+                    @fullName,
+                    @email,
+                    NULL,
+                    N'google',
+                    @googleSub,
+                    @avatarUrl,
+                    NULL,
+                    NULL,
+                    @dailyTarget,
+                    SYSDATETIME(),
+                    SYSDATETIME()
+                );
+                """;
 
                 createCommand.AddParameter("@fullName", fullName);
                 createCommand.AddParameter("@email", email);
                 createCommand.AddParameter("@googleSub", googleSub);
-                createCommand.AddParameter("@avatarUrl", NormalizeNullable(request.AvatarUrl));
-                createCommand.AddParameter("@learningGoal", NormalizeNullable(request.LearningGoal));
-                createCommand.AddParameter("@currentLevel", NormalizeNullable(request.CurrentLevel));
-                createCommand.AddParameter("@dailyTarget", request.DailyTarget ?? DefaultDailyTarget);
+                createCommand.AddParameter("@avatarUrl", avatarUrl);
+                createCommand.AddParameter("@dailyTarget", DefaultDailyTarget);
 
                 var userId = Convert.ToInt64(await createCommand.ExecuteScalarAsync(cancellationToken));
 
@@ -243,10 +274,10 @@ public sealed class AuthService
                     fullName,
                     email,
                     "google",
-                    NormalizeNullable(request.AvatarUrl),
-                    NormalizeNullable(request.LearningGoal),
-                    NormalizeNullable(request.CurrentLevel),
-                    request.DailyTarget ?? DefaultDailyTarget);
+                    avatarUrl,
+                    null,
+                    null,
+                    DefaultDailyTarget);
 
                 var (token, expiresAtUtc) = _jwtTokenService.CreateToken(user);
                 return AuthResult.Success(user, token, expiresAtUtc);
@@ -258,35 +289,31 @@ public sealed class AuthService
             }
         }
 
-        var updatedLearningGoal = NormalizeNullable(request.LearningGoal) ?? targetRecord.LearningGoal;
-        var updatedCurrentLevel = NormalizeNullable(request.CurrentLevel) ?? targetRecord.CurrentLevel;
-        var updatedDailyTarget = request.DailyTarget ?? targetRecord.DailyTarget;
-        var updatedAvatarUrl = NormalizeNullable(request.AvatarUrl) ?? targetRecord.AvatarUrl;
+        var updatedAvatarUrl = avatarUrl ?? targetRecord.AvatarUrl;
+        var updatedAuthProvider = targetRecord.AuthProvider;
 
         var updateCommand = connection.CreateCommand();
         updateCommand.CommandText =
             """
-            UPDATE dbo.Users
-            SET
-                full_name = @fullName,
-                email = @email,
-                auth_provider = N'google',
-                google_sub = @googleSub,
-                avatar_url = @avatarUrl,
-                learning_goal = @learningGoal,
-                current_level = @currentLevel,
-                daily_target = @dailyTarget,
-                updated_at = SYSDATETIME()
-            WHERE id = @userId;
-            """;
+        UPDATE dbo.Users
+        SET
+            full_name = @fullName,
+            email = @email,
+            auth_provider = @authProvider,
+            google_sub = CASE
+                WHEN google_sub IS NULL THEN @googleSub
+                ELSE google_sub
+            END,
+            avatar_url = @avatarUrl,
+            updated_at = SYSDATETIME()
+        WHERE id = @userId;
+        """;
 
         updateCommand.AddParameter("@fullName", fullName);
         updateCommand.AddParameter("@email", email);
+        updateCommand.AddParameter("@authProvider", updatedAuthProvider);
         updateCommand.AddParameter("@googleSub", googleSub);
         updateCommand.AddParameter("@avatarUrl", updatedAvatarUrl);
-        updateCommand.AddParameter("@learningGoal", updatedLearningGoal);
-        updateCommand.AddParameter("@currentLevel", updatedCurrentLevel);
-        updateCommand.AddParameter("@dailyTarget", updatedDailyTarget);
         updateCommand.AddParameter("@userId", targetRecord.Id);
 
         await updateCommand.ExecuteNonQueryAsync(cancellationToken);
@@ -295,11 +322,11 @@ public sealed class AuthService
             targetRecord.Id,
             fullName,
             email,
-            "google",
+            updatedAuthProvider,
             updatedAvatarUrl,
-            updatedLearningGoal,
-            updatedCurrentLevel,
-            updatedDailyTarget);
+            targetRecord.LearningGoal,
+            targetRecord.CurrentLevel,
+            targetRecord.DailyTarget);
 
         var (updatedToken, updatedExpiresAtUtc) = _jwtTokenService.CreateToken(updatedUser);
         return AuthResult.Success(updatedUser, updatedToken, updatedExpiresAtUtc);
