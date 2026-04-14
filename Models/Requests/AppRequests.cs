@@ -155,3 +155,43 @@ public sealed class DeckImportRequest
 
     public bool IsPublic { get; set; }
 }
+
+public sealed class EditProfileRequest
+{
+    [Required(ErrorMessage = "Họ và tên là bắt buộc.")]
+    [MaxLength(255)]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Email là bắt buộc.")]
+    [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
+    [MaxLength(255)]
+    public string Email { get; set; } = string.Empty;
+
+    [MaxLength(255)]
+    public string? AvatarUrl { get; set; }
+
+    [MaxLength(50)]
+    public string? LearningGoal { get; set; }
+
+    [MaxLength(10)]
+    public string? CurrentLevel { get; set; }
+
+    [Range(1, 200, ErrorMessage = "Mục tiêu mỗi ngày phải từ 1 đến 200 từ.")]
+    public int? DailyTarget { get; set; }
+}
+
+public sealed class ChangePasswordRequest
+{
+    [Required(ErrorMessage = "Mật khẩu hiện tại là bắt buộc.")]
+    [MinLength(6, ErrorMessage = "Mật khẩu hiện tại phải có ít nhất 6 ký tự.")]
+    public string CurrentPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Mật khẩu mới là bắt buộc.")]
+    [MinLength(6, ErrorMessage = "Mật khẩu mới phải có ít nhất 6 ký tự.")]
+    [MaxLength(100)]
+    public string NewPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Xác nhận mật khẩu là bắt buộc.")]
+    [Compare(nameof(NewPassword), ErrorMessage = "Mật khẩu xác nhận không khớp.")]
+    public string ConfirmNewPassword { get; set; } = string.Empty;
+}

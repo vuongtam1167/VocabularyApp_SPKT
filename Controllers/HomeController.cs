@@ -19,6 +19,8 @@ public class HomeController : Controller
     private readonly DeckService _deckService;
     private readonly LearningService _learningService;
     private readonly ProgressService _progressService;
+    private readonly AccountService _accountService;
+    private readonly JwtTokenService _jwtTokenService;
 
     public HomeController(
         ILogger<HomeController> logger,
@@ -26,7 +28,10 @@ public class HomeController : Controller
         DashboardService dashboardService,
         DeckService deckService,
         LearningService learningService,
-        ProgressService progressService)
+        ProgressService progressService,
+        AccountService accountService,
+        JwtTokenService jwtTokenService
+        )
     {
         _logger = logger;
         _authService = authService;
@@ -34,6 +39,8 @@ public class HomeController : Controller
         _deckService = deckService;
         _learningService = learningService;
         _progressService = progressService;
+        _accountService = accountService;
+        _jwtTokenService = jwtTokenService;
     }
 
     [AllowAnonymous]
@@ -284,5 +291,67 @@ public class HomeController : Controller
         return messages.Length > 0
             ? string.Join(" ", messages)
             : fallbackMessage;
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile([FromForm] EditProfileRequest request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new
+            {
+                message = BuildValidationMessage("Dữ liệu cập nhật không hợp lệ.")
+            });
+        }
+
+        var result = await _accountService.UpdateProfileAsync(
+            User.GetRequiredUserId(),
+            request,
+            cancellationToken);
+
+        if (!result.Succeeded || result.UpdatedUser is null)
+        {
+            return BadRequest(new { message = result.Message });
+        }
+
+        var (token, expiresAtUtc) = _jwtTokenService.CreateToken(result.UpdatedUser);
+        Response.Cookies.Append("access_token", token, new CookieOptions
+        {
+            HttpOnly = true,
+            IsEssential = true,
+            SameSite = SameSiteMode.Lax,
+            Secure = Request.IsHttps,
+            Expires = new DateTimeOffset(expiresAtUtc)
+        });
+
+        return Ok(new { message = result.Message });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword([FromForm] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new
+            {
+                message = BuildValidationMessage("Dữ liệu đổi mật khẩu không hợp lệ.")
+            });
+        }
+
+        var result = await _accountService.ChangePasswordAsync(
+            User.GetRequiredUserId(),
+            request,
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { message = result.Message });
+        }
+
+        return Ok(new { message = result.Message });
     }
 }

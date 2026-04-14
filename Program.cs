@@ -17,6 +17,7 @@ builder.Services.AddScoped<DeckService>();
 builder.Services.AddScoped<LearningService>();
 builder.Services.AddScoped<ProgressService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<AccountService>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var jwtKey = jwtSection["Key"] ?? throw new InvalidOperationException("Missing JWT key configuration.");

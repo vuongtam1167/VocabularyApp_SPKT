@@ -569,3 +569,4 @@ D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\refint\
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\Vocab_LearningApp.pdb
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\Vocab_LearningApp.genruntimeconfig.cache
 D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\ref\Vocab_LearningApp.dll
+D:\Code BT SPKT\C++\Đồ án\Vocab_LearningApp_Beta_3\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

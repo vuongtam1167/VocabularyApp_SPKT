@@ -46,9 +46,44 @@
             </nav>
 
             <div class="flex items-center gap-3">
-                <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.User.FullName)}&background=4f46e5&color=fff")"
-                     alt="Avatar"
-                     class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
+                <div class="relative">
+                    <!-- Avatar button -->
+                    <button id="avatarBtn" type="button" class="flex items-center gap-2 focus:outline-none">
+                        <img src="@(Model.User.AvatarUrl ?? $"https://ui-avatars.com/api/?name={Model.User.FullName}")"
+                             alt="Avatar"
+                             class="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-100">
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div id="avatarMenu"
+                         class="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-slate-200 hidden z-50">
+
+                        <div class="px-4 py-3 border-b">
+                            <p class="text-sm font-semibold text-slate-800">@Model.User.FullName</p>
+                            <p class="text-xs text-slate-500">@Model.User.Email</p>
+                        </div>
+
+                        <button type="button"
+                                class="block w-full px-4 py-2 text-left text-sm hover:bg-slate-100"
+                                onclick="openProfileModal()">
+                            👤 Chỉnh sửa thông tin
+                        </button>
+
+                        <button type="button"
+                                class="block w-full px-4 py-2 text-left text-sm hover:bg-slate-100"
+                                onclick="openPasswordModal()">
+                            🔒 Đổi mật khẩu
+                        </button>
+
+                        <form asp-action="Logout" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                🚪 Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 <button type="button"
                         onclick="openDeckModal()"
                         class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
@@ -393,6 +428,194 @@
 
         closeDeckModal();
         location.reload();
+        });
+    </script>
+
+    <div id="profileModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 px-4">
+        <div class="w-full max-w-2xl rounded-[2rem] bg-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Profile</p>
+                    <h3 class="mt-1 text-2xl font-bold">Chỉnh sửa thông tin</h3>
+                </div>
+                <button type="button" class="rounded-full p-2 hover:bg-slate-100" onclick="closeProfileModal()">✕</button>
+            </div>
+
+            <form id="profileForm" class="grid gap-4 p-6 sm:grid-cols-2">
+                @Html.AntiForgeryToken()
+
+                <div class="sm:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Họ và tên</label>
+                    <input name="FullName" value="@Model.User.FullName"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
+                    <input type="email" name="Email" value="@Model.User.Email"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Avatar URL</label>
+                    <input name="AvatarUrl" value="@Model.User.AvatarUrl" placeholder="https://..."
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Mục tiêu học</label>
+                    <input name="LearningGoal" value="@Model.User.LearningGoal"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Level</label>
+                    <input name="CurrentLevel" value="@Model.User.CurrentLevel"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Mục tiêu từ mới mỗi ngày</label>
+                    <input type="number" min="1" max="200" name="DailyTarget" value="@Model.User.DailyTarget"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div class="sm:col-span-2 flex justify-end gap-3 pt-2">
+                    <button type="button" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50" onclick="closeProfileModal()">Hủy</button>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 px-4">
+        <div class="w-full max-w-xl rounded-[2rem] bg-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Security</p>
+                    <h3 class="mt-1 text-2xl font-bold">Đổi Mật Khẩu</h3>
+                </div>
+                <button type="button" class="rounded-full p-2 hover:bg-slate-100" onclick="closePasswordModal()">✕</button>
+            </div>
+
+            <form id="passwordForm" class="space-y-4 p-6">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Mật khẩu hiện tại</label>
+                    <input type="password" name="CurrentPassword"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Mật khẩu mới</label>
+                    <input type="password" name="NewPassword"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700">Xác nhận mật khẩu mới</label>
+                    <input type="password" name="ConfirmNewPassword"
+                           class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" class="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-600 hover:bg-slate-50" onclick="closePasswordModal()">Hủy</button>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700">Cập nhật mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("avatarBtn");
+        const menu = document.getElementById("avatarMenu");
+
+        if (!btn || !menu) return;
+
+        // Toggle dropdown
+        btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        menu.classList.toggle("hidden");
+        });
+
+        // Click ra ngoài → đóng menu
+        document.addEventListener("click", function (e) {
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.add("hidden");
+        }
+        });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        window.openProfileModal = function () {
+        const modal = document.getElementById("profileModal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        };
+
+        window.closeProfileModal = function () {
+        const modal = document.getElementById("profileModal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        };
+
+        window.openPasswordModal = function () {
+        const modal = document.getElementById("passwordModal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        };
+
+        window.closePasswordModal = function () {
+        const modal = document.getElementById("passwordModal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        };
+
+        async function postForm(url, form) {
+        const response = await fetch(url, {
+        method: "POST",
+        body: new FormData(form)
+        });
+
+        const payload = await response.json().catch(() => null);
+
+        if (!response.ok) {
+        throw new Error(payload?.message || "Đã xảy ra lỗi.");
+        }
+
+        return payload;
+        }
+
+        const profileForm = document.getElementById("profileForm");
+        if (profileForm) {
+        profileForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        try {
+        await postForm("/Home/EditProfile", this);
+        window.closeProfileModal();
+        location.reload();
+        } catch (err) {
+        alert(err.message);
+        }
+        });
+        }
+
+        const passwordForm = document.getElementById("passwordForm");
+        if (passwordForm) {
+        passwordForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        try {
+        await postForm("/Home/ChangePassword", this);
+        window.closePasswordModal();
+        this.reset();
+        alert("Đã đổi mật khẩu thành công.");
+        } catch (err) {
+        alert(err.message);
+        }
+        });
+        }
         });
     </script>
 </body>
